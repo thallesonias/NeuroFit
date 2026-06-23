@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NeuroFit Ativo - Rastreador de Progressão</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a; --bg-card: #1e293b; --bg-elevated: #334155;
+            --bg-glass: rgba(30, 41, 59, 0.7);
+            --text-primary: #f8fafc; --text-secondary: #94a3b8; --text-muted: #64748b;
+            --accent-primary: #3b82f6; --accent-hover: #2563eb; --accent-success: #10b981;
+            --accent-warning: #f59e0b; --accent-danger: #ef4444; --accent-purple: #8b5cf6;
+            --border-radius-lg: 20px; --border-radius-md: 14px; --border-radius-sm: 8px;
+            --transition-speed: 0.3s; --focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-primary); line-height: 1.6; -webkit-tap-highlight-color: transparent; min-height: 100vh; overflow-x: hidden; }
+        
+       .container { max-width: 800px; margin: 0 auto; padding: 24px 20px; display: flex; flex-direction: column; min-height: 100vh; }
+       .hidden { display: none!important; }
+        
+       .fade-in { animation: fadeIn var(--transition-speed) ease-out forwards; }
+       .slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @keyframes intensePulse {
+            0% { box-shadow: 0 0 0px var(--accent-danger); border-color: transparent; transform: scale(1); }
+            50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.4); border-color: var(--accent-danger); transform: scale(1.02); }
+            100% { box-shadow: 0 0 0px var(--accent-danger); border-color: transparent; transform: scale(1); }
+        }
+       .intense-pulse { animation: intensePulse 2s infinite ease-in-out; border: 1px solid var(--accent-danger); position: relative; overflow: hidden; }
+       .intense-pulse::before { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(45deg, rgba(239, 68, 68, 0.1), transparent); pointer-events: none; }
+
+        h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; }
+        h2 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.015em; }
+        h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+       .text-sm { font-size: 0.875rem; }.text-xs { font-size: 0.75rem; }
+       .text-center { text-align: center; }.text-muted { color: var(--text-muted); }
+       .text-secondary { color: var(--text-secondary); }
+       .text-success { color: var(--accent-success); }.text-warning { color: var(--accent-warning); }.text-danger { color: var(--accent-danger); }
+        
+       .btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 24px; border: none; border-radius: var(--border-radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); gap: 10px; width: 100%; user-select: none; }
+       .btn:active { transform: scale(0.97); }
+       .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+       .btn-primary { background-color: var(--accent-primary); color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3); }
+       .btn-primary:hover { background-color: var(--accent-hover); box-shadow: 0 6px 8px -1px rgba(59, 130, 246, 0.4); }
+       .btn-success { background-color: var(--accent-success); color: white; }
+       .btn-outline { background-color: transparent; border: 2px solid var(--bg-elevated); color: var(--text-primary); }
+       .btn-outline:hover { background-color: var(--bg-elevated); }
+       .btn-ghost { background-color: transparent; color: var(--text-secondary); padding: 8px 16px; font-size: 0.875rem; transition: all 0.2s; border-radius: var(--border-radius-sm); display: flex; align-items: center; justify-content: center;}
+       .btn-ghost:hover:not(:disabled) { color: var(--text-primary); background-color: rgba(255,255,255,0.05); }
+       .btn-ghost:disabled { opacity: 0.3; cursor: not-allowed; }
+
+       .card { background-color: var(--bg-card); border-radius: var(--border-radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease; }
+       .routine-card { border: 2px solid transparent; cursor: pointer; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+       .routine-card:hover { border-color: var(--accent-primary); transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.15); }
+       .routine-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-primary); opacity: 0; transition: opacity 0.3s; }
+       .routine-card:hover::before { opacity: 1; }
+
+       .input-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+       .input-row { display: flex; gap: 16px; width: 100%; }
+        label { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .stepper-control { display: flex; align-items: stretch; background-color: var(--bg-dark); border: 2px solid var(--bg-elevated); border-radius: var(--border-radius-md); transition: all 0.2s; overflow: hidden; }
+        .stepper-control:focus-within { border-color: var(--accent-primary); box-shadow: var(--focus-ring); }
+        .stepper-btn { background: transparent; border: none; color: var(--text-primary); padding: 0 20px; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; user-select: none; }
+        .stepper-btn:hover { background: rgba(255,255,255,0.05); color: var(--accent-primary); }
+        .stepper-btn:active { background: rgba(255,255,255,0.1); }
+        
+        .stepper-control input[type="number"] { width: 100%; padding: 16px 0; background-color: transparent; border: none; color: white; font-size: 1.25rem; font-weight: 600; text-align: center; appearance: textfield; -moz-appearance: textfield; }
+        .stepper-control input[type="number"]:focus { outline: none; }
+        .stepper-control input[type="number"]::-webkit-outer-spin-button, .stepper-control input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .generic-input { width: 100%; padding: 12px; background-color: var(--bg-dark); border: 2px solid var(--bg-elevated); border-radius: var(--border-radius-sm); color: white; font-size: 0.95rem; transition: all 0.2s; }
+        .generic-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: var(--focus-ring); }
+        select.generic-input { appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="%2394a3b8" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position-x: 95%; background-position-y: 50%; }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; position: sticky; top: 0; z-index: 10; background: linear-gradient(180deg, var(--bg-dark) 80%, transparent 100%); padding-top: 10px; }
+       .back-btn { background: var(--bg-card); border: 1px solid var(--bg-elevated); border-radius: 50%; color: var(--text-primary); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; flex-shrink: 0;}
+       .back-btn:hover { background: var(--bg-elevated); transform: scale(1.05); }
+
+       .badge { background-color: var(--bg-elevated); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-primary); display: inline-flex; align-items: center; gap: 6px; }
+       .badge-warning { background-color: rgba(245, 158, 11, 0.15); color: var(--accent-warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+       .badge-success { background-color: rgba(16, 185, 129, 0.15); color: var(--accent-success); border: 1px solid rgba(16, 185, 129, 0.3); }
+       .badge-purple { background-color: rgba(139, 92, 246, 0.15); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.3); }
+       .badge-danger { background-color: rgba(239, 68, 68, 0.15); color: var(--accent-danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+       .timer-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 0; position: relative; }
+       .breathing-ring { width: 220px; height: 220px; border-radius: 50%; border: 4px solid var(--bg-elevated); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 0 40px rgba(59, 130, 246, 0.05); transition: transform 4s ease-in-out; }
+       .ring-pulse { animation: breathe 8s infinite cubic-bezier(0.4, 0, 0.2, 1); border-color: var(--accent-primary); }
+        @keyframes breathe { 0%, 100% { transform: scale(0.9); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); } 50% { transform: scale(1.1); box-shadow: 0 0 50px rgba(59, 130, 246, 0.6); } }
+       .timer-display { font-size: 4.5rem; font-weight: 800; color: var(--text-primary); font-variant-numeric: tabular-nums; letter-spacing: -2px; position: absolute; z-index: 2; }
+       .somatic-label { margin-top: 30px; font-size: 1rem; color: var(--accent-primary); font-weight: 500; letter-spacing: 2px; text-transform: uppercase; animation: pulseText 4s infinite; }
+        @keyframes pulseText { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+       .progress-container { width: 100%; height: 8px; background-color: var(--bg-elevated); border-radius: 4px; margin-bottom: 24px; overflow: hidden; }
+       .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-purple)); width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+
+       .sync-panel { margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--bg-elevated); display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+        svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
+       .flex-between { display: flex; justify-content: space-between; align-items: center; }
+       .mb-2 { margin-bottom: 8px; }.mb-4 { margin-bottom: 16px; }.mt-2 { margin-top: 8px; }.mt-4 { margin-top: 16px; }
+       .highlight-box { background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--accent-primary); padding: 12px 16px; border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0; }
+        
+        @media (max-width: 480px) {
+           .input-row { flex-direction: column; gap: 12px; }
+           .breathing-ring { width: 180px; height: 180px; }
+           .timer-display { font-size: 3.5rem; }
+           .stepper-btn { padding: 0 15px; }
+        }
+    </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+</head>
+<body>
+    <div class="container" id="app">
+    </div>
+
+    <script>
+    
+    // --- NOVO REGISTRO DO SERVICE WORKER ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('PWA ativo!'))
+                .catch(err => console.log('Erro no PWA:', err));
+        });
+    }
+    
+        const defaultWorkoutData = {
+            A: {
+                id: 'A', name: 'Treino A - Membros Superiores',
+                exercises: [
+                    { id: 'A1', name: 'Supino Inclinado + Halteres', sets: 4, reps: '8 a 12', rest: 120, step: 2.5, instructions: 'Lordose natural cravada na almofada. Banco 30° a 45°. Sem leg drive agressivo para evitar arqueamento lombar.' },
+                    { id: 'A2', name: 'Supino Reto na Máquina', sets: 4, reps: '10 a 15', rest: 120, step: 5, instructions: 'Encosto fornece suporte total. Compressão intervertebral nula. Tensão constante no peitoral.' },
+                    { id: 'A3', name: 'Remada Baixa Sentada', sets: 4, reps: '8 a 12', rest: 120, step: 5, instructions: 'Manter a pelve travada e o core rígido. Evitar balançar o tronco para frente/trás para zerar a tensão na lombar.' },
+                    { id: 'A4', name: 'Puxada Frontal Polia Alta', sets: 4, reps: '10 a 15', rest: 120, step: 5, instructions: 'Trancar as coxas forçosamente no suporte. Evitar jogar o tronco para trás para puxar a carga.' },
+                    { id: 'A5', name: 'Elevação Lateral', sets: 4, reps: '12 a 20', rest: 120, step: 1, instructions: 'Execução estrita. Corpo recostado ou estabilizado para eliminar o balanço (roubo) e proteger a lombar.' },
+                    { id: 'A6', name: 'Biset: Rosca Direta + Tríceps Corda', sets: 4, reps: '10 a 15', rest: 120, step: 2.5, instructions: 'Exercícios executados em sequência (Biset) até próximo à falha mecânica.', isIntense: true }
+                ]
+            },
+            B: {
+                id: 'B', name: 'Treino B - Membros Inferiores',
+                exercises: [
+                    { id: 'B1', name: 'Leg Press 45°', sets: 5, reps: '8 a 15', rest: 120, step: 10, instructions: 'Evitar descer demais a ponto de tirar o quadril do banco (butt wink). Manter lombar grudada no encosto.' },
+                    { id: 'B2', name: 'Agachamento Búlgaro', sets: 4, reps: '10 a 12', rest: 120, step: 2.5, instructions: '2 séries por perna. Carga reduzida no tronco. Leve inclinação à frente para focar no glúteo e esgotar o quadríceps.' },
+                    { id: 'B3', name: 'Cadeira Extensora', sets: 4, reps: '12 a 20', rest: 120, step: 5, instructions: 'Coluna 100% protegida de compressão. Isolamento puro e tensão muscular máxima na subida.' },
+                    { id: 'B4', name: 'Cadeira Flexora (Sentado)', sets: 4, reps: '10 a 15', rest: 120, step: 5, instructions: 'Alongamento exato do feixe posterior. Manter a postura alinhada no encosto.' },
+                    { id: 'B5', name: 'Panturrilha em Pé', sets: 6, reps: 'Até a falha', rest: 120, step: 5, instructions: 'Toda a pressão concentrada nos joelhos/panturrilhas, sem peso transversal ou axial sobre os ombros e coluna.' }
+                ]
+            }
+        };
+
+        const defaultWorkoutOrder = ['A', 'B'];
+        const defaultSettings = {}; 
+
+        const parseReps = (repsStr) => {
+            if (!repsStr) return { min: 10, max: 10, target: 10, isFailure: false };
+            if (repsStr.toLowerCase().includes("falha")) return { min: 15, max: 20, target: 20, isFailure: true };
+            
+            const match = repsStr.match(/(\d+)\s*a\s*(\d+)/);
+            if (match) {
+                const min = parseInt(match[1]);
+                const max = parseInt(match[2]);
+                return { min: min, max: max, target: Math.round((min + max) / 2), isFailure: false };
+            }
+            
+            const singleNum = parseInt(repsStr.replace(/\D/g, ''));
+            return { min: singleNum || 1, max: singleNum || 1, target: singleNum || 1, isFailure: false };
+        };
+
+        const roundToStep = (weight, step) => {
+            if (weight <= 0) return 0;
+            let rounded = Math.round((weight + Number.EPSILON) / step) * step;
+            return parseFloat(rounded.toFixed(2));
+        };
+
+        const calculateWathen1RM = (weight, reps) => {
+            if (weight <= 0 || reps <= 0) return 0;
+            if (reps === 1) return weight;
+            return (100 * weight) / (48.8 + 53.8 * Math.exp(-0.075 * reps));
+        };
+
+        const getDynamicIntensity = (targetReps) => {
+            const intensity = (37 - targetReps) / 36;
+            return Math.max(0.50, Math.min(1.0, intensity));
+        };
+
+        const evaluateProgressionGlobal = (exerciseLogs, parsedReps, machineStep, totalSets) => {
+            if (!exerciseLogs || exerciseLogs.length === 0) return { newWeight: 0, status: 'normal' };
+            
+            const firstSetWeight = exerciseLogs[0].weight;
+            const R1 = exerciseLogs[0].reps;
+
+            if (parsedReps.isFailure) {
+                if (R1 >= 20) {
+                    let ideal = firstSetWeight * 1.05;
+                    let finalW = roundToStep(ideal, machineStep);
+                    if (finalW <= firstSetWeight) finalW = firstSetWeight + machineStep;
+                    return { newWeight: finalW, status: 'increase' };
+                }
+                return { newWeight: firstSetWeight, status: 'normal' };
+            }
+
+            const S = totalSets;
+            const R_total = exerciseLogs.reduce((sum, log) => sum + log.reps, 0);
+            const R_min = parsedReps.min;
+            const R_max = parsedReps.max;
+            
+            const R_avg = R_total / exerciseLogs.length;
+            const minRepInSets = Math.min(...exerciseLogs.map(l => l.reps));
+            const maxRepInSets = Math.max(...exerciseLogs.map(l => l.reps));
+
+            const isSevereFailure = R1 < R_min || R_avg < R_min || (minRepInSets <= (maxRepInSets * 0.5) && minRepInSets < R_min);
+
+            if (isSevereFailure) {
+                let bestVolumeLog = exerciseLogs[0];
+                exerciseLogs.forEach(log => {
+                    if (log.weight > 0) {
+                        if (log.reps > bestVolumeLog.reps) {
+                            bestVolumeLog = log;
+                        } else if (log.reps === bestVolumeLog.reps && log.weight > bestVolumeLog.weight) {
+                            bestVolumeLog = log;
+                        }
+                    }
+                });
+
+                const true1RM = calculateWathen1RM(bestVolumeLog.weight, bestVolumeLog.reps);
+
+                if (true1RM === 0) {
+                    return { newWeight: Math.max(0, roundToStep(firstSetWeight - machineStep, machineStep)), status: 'decrease' };
+                }
+
+                const intensityForMinReps = getDynamicIntensity(R_min);
+                let targetWeightForMinReps = true1RM * intensityForMinReps;
+                
+                let finalDeloadWeight = roundToStep(targetWeightForMinReps, machineStep);
+
+                // --- TRAVA DE SEGURANÇA ABSOLUTA ---
+                // Se TODAS as séries falharam (nenhuma atingiu o R_min), o algoritmo é proibido
+                // de recomendar um peso igual ou maior ao menor peso que causou falha na sessão.
+                let allFailed = true;
+                let minFailedWeight = Infinity;
+                exerciseLogs.forEach(log => {
+                    if (log.reps >= R_min) allFailed = false;
+                    if (log.reps < R_min && log.weight > 0 && log.weight < minFailedWeight) {
+                        minFailedWeight = log.weight;
+                    }
+                });
+
+                if (allFailed && minFailedWeight !== Infinity && finalDeloadWeight >= minFailedWeight) {
+                    // Força a carga a ser pelo menos 1 step abaixo do peso que o usuário já provou que não aguenta
+                    finalDeloadWeight = Math.max(0, roundToStep(minFailedWeight - machineStep, machineStep));
+                } else if (finalDeloadWeight >= firstSetWeight && firstSetWeight > 0) {
+                    // Proteção secundária: nunca receitar um peso maior que o inicial em um deload
+                    finalDeloadWeight = Math.max(0, roundToStep(firstSetWeight - machineStep, machineStep));
+                }
+
+                return { newWeight: finalDeloadWeight, status: 'decrease' };
+            } 
+            else if (R_avg >= (R_max * 0.9) && minRepInSets >= R_min) {
+                let ideal = firstSetWeight * 1.05; 
+                let finalW = roundToStep(ideal, machineStep);
+                if (finalW <= firstSetWeight) finalW = firstSetWeight + machineStep;
+                return { newWeight: finalW, status: 'increase' };
+            } 
+            else {
+                return { newWeight: firstSetWeight, status: 'normal' };
+            }
+        };
+
+        let state = {
+            screen: 'home',
+            workoutId: null,
+            editRoutineId: null,
+            exIndex: 0,
+            isResting: false,
+            timeLeft: 0,
+            inputWeight: '',
+            inputReps: '',
+            weightStatus: 'normal',
+            sessionLog: [],
+            modal: null,
+            settings: JSON.parse(localStorage.getItem('neurofit_settings')) || defaultSettings,
+            progress: JSON.parse(localStorage.getItem('neurofit_progress')) || {},
+            history: JSON.parse(localStorage.getItem('neurofit_history')) || [],
+            customWorkouts: JSON.parse(localStorage.getItem('neurofit_customWorkouts')) || JSON.parse(JSON.stringify(defaultWorkoutData)),
+            workoutOrder: JSON.parse(localStorage.getItem('neurofit_workoutOrder')) || defaultWorkoutOrder,
+            simulator: { reps: '10 a 12', sets: 4, step: 2, logs: [{w: 10, r: 4}, {w: 10, r: 4}, {w: 6, r: 8}, {w: 6, r: 8}] }
+        };
+        
+        let timerInterval = null;
+        let somaticBreathInterval = null;
+        let breathState = 'INSPIRAR';
+
+        const saveProgress = () => localStorage.setItem('neurofit_progress', JSON.stringify(state.progress));
+        const saveHistory = () => localStorage.setItem('neurofit_history', JSON.stringify(state.history));
+        const saveSettingsForm = () => { localStorage.setItem('neurofit_settings', JSON.stringify(state.settings)); navigate('home'); };
+        const saveCustomWorkouts = () => localStorage.setItem('neurofit_customWorkouts', JSON.stringify(state.customWorkouts));
+        const saveWorkoutOrder = () => localStorage.setItem('neurofit_workoutOrder', JSON.stringify(state.workoutOrder));
+
+        const exportData = () => {
+            const dataToExport = {
+                progress: state.progress, history: state.history, settings: state.settings,
+                customWorkouts: state.customWorkouts, workoutOrder: state.workoutOrder
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport));
+            const anchor = document.createElement('a');
+            anchor.setAttribute("href", dataStr);
+            anchor.setAttribute("download", "neurofit_export_" + new Date().toISOString().slice(0,10) + ".json");
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+        };
+
+        const showModal = (type, message, onConfirmCallback = null) => {
+            state.modal = { type, message, onConfirm: onConfirmCallback };
+            render();
+        };
+
+        const closeModal = () => {
+            state.modal = null;
+            render();
+        };
+
+        const confirmModal = () => {
+            if (state.modal && state.modal.onConfirm) state.modal.onConfirm();
+            closeModal();
+        };
+
+        const importData = () => {
+            const input = document.createElement('input');
+            input.type = 'file'; input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.readAsText(file,'UTF-8');
+                reader.onload = readerEvent => {
+                    try {
+                        const content = JSON.parse(readerEvent.target.result);
+                        if(content.progress && content.history) {
+                            state.progress = content.progress; state.history = content.history;
+                            if(content.settings) state.settings = content.settings;
+                            if(content.customWorkouts) state.customWorkouts = content.customWorkouts;
+                            if(content.workoutOrder) state.workoutOrder = content.workoutOrder;
+                            saveProgress(); saveHistory(); saveSettingsForm(); saveCustomWorkouts(); saveWorkoutOrder();
+                            recalculateProgress();
+                            showModal('alert', 'Dados importados com sucesso.');
+                        }
+                    } catch(err) { showModal('alert', 'Erro: Arquivo JSON inválido.'); }
+                }
+            }
+            input.click();
+        };
+
+        const recalculateProgress = () => {
+            const allExIds = new Set();
+            Object.values(state.customWorkouts).forEach(w => w.exercises.forEach(e => allExIds.add(e.id)));
+            
+            allExIds.forEach(exId => {
+                const relevantLogs = [];
+                state.history.forEach(session => {
+                    const sessionExLogs = session.log.filter(l => l.exId === exId);
+                    if (sessionExLogs.length > 0) {
+                        relevantLogs.push(sessionExLogs);
+                    }
+                });
+
+                if (relevantLogs.length === 0) {
+                    delete state.progress[exId]; 
+                } else {
+                    const lastSessionLogs = relevantLogs[relevantLogs.length - 1];
+                    let exDef = null;
+                    Object.values(state.customWorkouts).forEach(w => {
+                        const found = w.exercises.find(e => e.id === exId);
+                        if(found) exDef = found;
+                    });
+
+                    if (exDef) {
+                        const parsedReps = parseReps(exDef.reps);
+                        const evalResult = evaluateProgressionGlobal(lastSessionLogs, parsedReps, exDef.step || 2.5, exDef.sets);
+                        
+                        state.progress[exId] = {
+                            hasTested1RM: true,
+                            baseWeight: evalResult.newWeight,
+                            lastReps: parsedReps.target,
+                            earnedOverload: evalResult.status === 'increase',
+                            sufferedDeload: evalResult.status === 'decrease'
+                        };
+                    }
+                }
+            });
+            saveProgress();
+        };
+
+        const deleteHistory = (id) => {
+            showModal('confirm', 'Tem a certeza que deseja eliminar este treino do histórico? As progressões serão recalculadas.', () => {
+                state.history = state.history.filter(h => h.id !== id);
+                recalculateProgress();
+                saveHistory();
+                render();
+            });
+        };
+
+        const navigate = (screenId) => { state.screen = screenId; render(); };
+
+        const startWorkout = (id) => {
+            state.workoutId = id; state.exIndex = 0;
+            state.sessionLog = []; state.isResting = false;
+            loadSuggestedValues(); navigate('workout');
+        };
+
+        const moveWorkout = (index, dir) => {
+            if (index + dir < 0 || index + dir >= state.workoutOrder.length) return;
+            const newOrder = [...state.workoutOrder];
+            [newOrder[index], newOrder[index+dir]] = [newOrder[index+dir], newOrder[index]];
+            state.workoutOrder = newOrder;
+            saveWorkoutOrder();
+            render();
+        };
+
+        const navigateEditRoutine = (id) => {
+            state.editRoutineId = id;
+            navigate('edit_routine');
+        };
+
+        const updateExField = (routineId, exIndex, field, value) => {
+            state.customWorkouts[routineId].exercises[exIndex][field] = value;
+            saveCustomWorkouts();
+        };
+
+        const updateExerciseStep = (routineId, exIndex, newStep) => {
+            const parsedStep = parseFloat(newStep) || 2.5;
+            state.customWorkouts[routineId].exercises[exIndex].step = parsedStep;
+            saveCustomWorkouts();
+            
+            // Recalcula profundamente a partir do histórico sempre que alterar o step na edição de rotina
+            recalculateProgress();
+        };
+
+        const addExercise = (routineId) => {
+            const wData = state.customWorkouts[routineId];
+            wData.exercises.push({
+                id: 'ex_' + Date.now(),
+                name: 'Novo Exercício',
+                sets: 4,
+                reps: '8 a 12',
+                rest: 120, 
+                step: 2.5,
+                instructions: ''
+            });
+            saveCustomWorkouts();
+            render();
+        };
+
+        const deleteExercise = (routineId, exIndex) => {
+            showModal('confirm', 'Deseja realmente excluir este exercício?', () => {
+                state.customWorkouts[routineId].exercises.splice(exIndex, 1);
+                saveCustomWorkouts();
+                render();
+            });
+        };
+
+        const moveExercise = (index, dir) => {
+            const exList = state.customWorkouts[state.editRoutineId].exercises;
+            if (index + dir < 0 || index + dir >= exList.length) return;
+            [exList[index], exList[index+dir]] = [exList[index+dir], exList[index]];
+            saveCustomWorkouts();
+            render();
+        };
+
+        const cycleExercise = (dir) => {
+            const wData = state.customWorkouts[state.workoutId];
+            const numEx = wData.exercises.length;
+            if (numEx === 0) return;
+            state.exIndex = (state.exIndex + dir + numEx) % numEx;
+            skipRest();
+            loadSuggestedValues();
+            render();
+        };
+
+        const loadSuggestedValues = () => {
+            const ex = state.customWorkouts[state.workoutId].exercises[state.exIndex];
+            const history = state.progress[ex.id];
+            
+            if (history && history.hasTested1RM) {
+                state.inputWeight = history.baseWeight;
+                state.inputReps = history.lastReps || '';
+                state.weightStatus = history.earnedOverload? 'increase' : (history.sufferedDeload ? 'decrease' : 'normal');
+            } else {
+                state.inputWeight = ''; state.inputReps = ''; state.weightStatus = 'normal';
+            }
+        };
+
+        const adjustWeight = (val) => {
+            const ex = state.customWorkouts[state.workoutId].exercises[state.exIndex];
+            const step = ex.step || 2.5;
+            let current = parseFloat(state.inputWeight) || 0;
+            let newVal = Math.max(0, current + (val * step)); 
+            newVal = roundToStep(newVal, step);
+            state.inputWeight = newVal;
+            document.getElementById('inputWeight').value = newVal;
+        };
+
+        const adjustReps = (val) => {
+            let current = parseInt(state.inputReps) || 0;
+            let newVal = Math.max(0, current + val);
+            state.inputReps = newVal;
+            document.getElementById('inputReps').value = newVal;
+        };
+
+        const updateExStepInWorkout = (exId, newStep) => {
+            const parsedStep = parseFloat(newStep) || 2.5;
+            const wData = state.customWorkouts[state.workoutId];
+            const exIndex = wData.exercises.findIndex(e => e.id === exId);
+            if(exIndex !== -1) {
+                wData.exercises[exIndex].step = parsedStep;
+                saveCustomWorkouts();
+                
+                // Verifica se já iniciamos as séries deste exercício HOJE
+                const hasStartedExercise = state.sessionLog.some(log => log.exId === exId);
+
+                if (!hasStartedExercise) {
+                    // Se ainda não começou, faz um re-cálculo puro a partir do HISTÓRICO bruto
+                    recalculateProgress();
+                    if (state.exIndex === exIndex) {
+                        loadSuggestedValues(); 
+                    }
+                } else {
+                    // Se já fez séries hoje e mudou o step a meio, arredonda apenas a carga em memória
+                    if (state.progress[exId] && state.progress[exId].baseWeight !== undefined) {
+                        state.progress[exId].baseWeight = roundToStep(state.progress[exId].baseWeight, parsedStep);
+                        saveProgress();
+                    }
+                    if (state.exIndex === exIndex && state.inputWeight !== '') {
+                        state.inputWeight = roundToStep(parseFloat(state.inputWeight), parsedStep);
+                    }
+                }
+
+                // Preserva inputs de teste (Análise Inicial) antes do re-render da tela
+                const tWeight = document.getElementById('testWeight')?.value;
+                const tReps = document.getElementById('testReps')?.value;
+
+                render();
+
+                // Restaura os inputs arredondados
+                if (tWeight !== undefined) {
+                    const newTWeight = document.getElementById('testWeight');
+                    if (newTWeight && tWeight !== '') newTWeight.value = roundToStep(parseFloat(tWeight), parsedStep);
+                }
+                if (tReps !== undefined) {
+                    const newTReps = document.getElementById('testReps');
+                    if (newTReps && tReps !== '') newTReps.value = tReps;
+                }
+            }
+        };
+
+        const execute1RMTest = () => {
+            const w = parseFloat(document.getElementById('testWeight').value);
+            const r = parseInt(document.getElementById('testReps').value);
+            if (w >= 0 && r > 0) { 
+                const ex = state.customWorkouts[state.workoutId].exercises[state.exIndex];
+                const parsedReps = parseReps(ex.reps);
+                const step = ex.step || 2.5;
+                
+                const wathen1RM = calculateWathen1RM(w, r); 
+                const intensity = getDynamicIntensity(parsedReps.target);
+                
+                let targetWeight = wathen1RM * intensity;
+                targetWeight = roundToStep(targetWeight, step);
+                
+                state.progress[ex.id] = {
+                    hasTested1RM: true, 
+                    oneRM: wathen1RM, 
+                    baseWeight: targetWeight,
+                    lastReps: parsedReps.target, 
+                    earnedOverload: false, 
+                    sufferedDeload: false
+                };
+                
+                saveProgress(); loadSuggestedValues(); render();
+            }
+        };
+
+        const completeSet = () => {
+            const weight = parseFloat(document.getElementById('inputWeight').value) || 0;
+            const reps = parseInt(document.getElementById('inputReps').value) || 0;
+            const ex = state.customWorkouts[state.workoutId].exercises[state.exIndex];
+            const parsedReps = parseReps(ex.reps);
+            const step = ex.step || 2.5;
+            
+            const currentSetIndex = state.sessionLog.filter(log => log.exId === ex.id).length;
+            if (currentSetIndex >= ex.sets) return; 
+
+            state.sessionLog.push({ exId: ex.id, name: ex.name, set: currentSetIndex + 1, weight, reps });
+
+            let history = state.progress[ex.id] || { hasTested1RM: false, baseWeight: weight };
+            
+            const isFirstSet = currentSetIndex === 0;
+            if (isFirstSet) { 
+                history.baseWeight = weight;
+                history.earnedOverload = false;
+                history.sufferedDeload = false;
+                state.weightStatus = 'normal';
+            }
+
+            const isLastSet = currentSetIndex === ex.sets - 1;
+            const exerciseLogs = state.sessionLog.filter(log => log.exId === ex.id);
+
+            if (isLastSet) {
+                const evalResult = evaluateProgressionGlobal(exerciseLogs, parsedReps, step, ex.sets);
+                history.baseWeight = evalResult.newWeight;
+                history.lastReps = parsedReps.target;
+                
+                if (evalResult.status === 'increase') history.earnedOverload = true;
+                if (evalResult.status === 'decrease') history.sufferedDeload = true;
+                
+                state.weightStatus = evalResult.status;
+
+            } else {
+                if (reps < parsedReps.min && !parsedReps.isFailure) {
+                    // Prevenção imediata intra-treino baseada em performance real calculada de Wathen
+                    const current1RM = calculateWathen1RM(weight, reps);
+                    const idealIntensity = getDynamicIntensity(parsedReps.min);
+                    let targetW = current1RM * idealIntensity;
+                    let newW = roundToStep(targetW, step);
+                    
+                    if (newW >= weight && weight > 0) {
+                        newW = Math.max(0, roundToStep(weight - step, step));
+                    }
+                    
+                    state.inputWeight = newW; 
+                    state.weightStatus = 'decrease';
+
+                    history.baseWeight = newW;
+                    history.sufferedDeload = true;
+                    history.earnedOverload = false;
+                } else {
+                    state.inputWeight = weight;
+                    if(state.weightStatus === 'decrease' || state.weightStatus === 'increase') state.weightStatus = 'normal';
+
+                    history.baseWeight = weight;
+                    history.sufferedDeload = false;
+                    history.earnedOverload = false;
+                }
+            }
+
+            state.progress[ex.id] = history;
+            saveProgress();
+
+            if (isLastSet) {
+                const allEx = state.customWorkouts[state.workoutId].exercises;
+                const nextIncompleteIdx = allEx.findIndex(e => state.sessionLog.filter(l => l.exId === e.id).length < e.sets);
+
+                if (nextIncompleteIdx === -1) {
+                    finishWorkout();
+                } else {
+                    state.exIndex = nextIncompleteIdx;
+                    startRestTimer(ex.rest);
+                }
+            } else {
+                startRestTimer(ex.rest);
+            }
+        };
+
+        const startRestTimer = (seconds) => {
+            state.isResting = true; state.timeLeft = seconds; render();
+            
+            let breathCount = 0;
+            somaticBreathInterval = setInterval(() => {
+                breathCount++;
+                const modulo = breathCount % 12;
+                if(modulo < 4) breathState = 'INSPIRAR';
+                else if(modulo < 8) breathState = 'SEGURAR';
+                else breathState = 'EXPIRAR';
+                
+                const labelElement = document.getElementById('somatic-label');
+                if(labelElement) labelElement.innerText = breathState;
+            }, 1000);
+
+            timerInterval = setInterval(() => {
+                state.timeLeft--;
+                if (state.timeLeft <= 0) { skipRest(); } else {
+                    const disp = document.getElementById('timer-display');
+                    if(disp) disp.innerText = formatTime(state.timeLeft);
+                }
+            }, 1000);
+        };
+
+        const skipRest = () => { 
+            if(timerInterval) clearInterval(timerInterval); 
+            if(somaticBreathInterval) clearInterval(somaticBreathInterval); 
+            state.isResting = false; 
+            loadSuggestedValues();
+            render(); 
+        };
+
+        const finishWorkout = () => {
+            const uniqueExercisesCount = new Set(state.sessionLog.map(l => l.exId)).size;
+            
+            if (uniqueExercisesCount > 1 || state.sessionLog.length > 1) {
+                const wData = state.customWorkouts[state.workoutId];
+                state.history.push({ id: Date.now(), routine: wData.name, date: new Date().toISOString(), log: [...state.sessionLog] });
+                saveHistory();
+                showModal('alert', 'Treino finalizado e progressões calculadas!', () => navigate('home'));
+            } else if (state.sessionLog.length > 0) {
+                showModal('alert', 'O treino não foi guardado (volume insuficiente).', () => navigate('home'));
+            } else {
+                navigate('home');
+            }
+        };
+
+        const runSimulation = () => {
+            const parsed = parseReps(state.simulator.reps);
+            const logs = state.simulator.logs.map(l => ({weight: parseFloat(l.w) || 0, reps: parseInt(l.r) || 0}));
+            const result = evaluateProgressionGlobal(logs, parsed, state.simulator.step, state.simulator.sets);
+            
+            let color = 'var(--text-primary)';
+            let bg = 'var(--bg-dark)';
+            if (result.status === 'increase') { color = 'var(--accent-success)'; bg = 'rgba(16, 185, 129, 0.1)'; }
+            if (result.status === 'decrease') { color = 'var(--accent-danger)'; bg = 'rgba(239, 68, 68, 0.1)'; }
+
+            document.getElementById('sim_result').innerHTML = `
+                <div style="background: ${bg}; padding: 16px; border-radius: var(--border-radius-sm); border: 1px solid ${color};">
+                    <h4 style="margin-bottom: 8px;">Análise Concluída</h4>
+                    <p style="margin-bottom: 4px;">Status: <strong style="color: ${color}; text-transform: uppercase;">${result.status}</strong></p>
+                    <p>Próxima Carga Recomendada: <strong style="font-size: 1.25rem;">${result.newWeight} kg</strong></p>
+                    <p class="text-sm text-secondary mt-2">Volume Total Executado: ${logs.reduce((acc, l) => acc + l.reps, 0)} reps.</p>
+                </div>
+            `;
+        };
+
+        const formatTime = (sec) => `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`;
+        
+        const icons = {
+            play: '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>',
+            check: '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+            skip: '<svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>',
+            arrowLeft: '<svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>',
+            chevronLeft: '<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>',
+            chevronRight: '<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>',
+            edit: '<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>',
+            alert: '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+            up: '<svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>',
+            down: '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>',
+            download: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>',
+            upload: '<svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>',
+            brain: '<svg viewBox="0 0 24 24"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0.34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path></svg>',
+            trash: '<svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
+            history: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+            settings: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
+            plus: '<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
+            minus: '<svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
+            flame: '<svg viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>',
+            calculator: '<svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="14.01"></line><line x1="12" y1="14" x2="12" y2="14.01"></line><line x1="8" y1="14" x2="8" y2="14.01"></line><line x1="16" y1="18" x2="16" y2="18.01"></line><line x1="12" y1="18" x2="12" y2="18.01"></line><line x1="8" y1="18" x2="8" y2="18.01"></line><line x1="16" y1="10" x2="16" y2="10.01"></line><line x1="12" y1="10" x2="12" y2="10.01"></line><line x1="8" y1="10" x2="8" y2="10.01"></line></svg>'
+        };
+
+        const render = () => {
+            const app = document.getElementById('app');
+            app.innerHTML = '';
+            
+            if (state.screen === 'home') {
+                app.innerHTML = `
+                    <header class="slide-up">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <h1 style="display: flex; align-items: center; gap: 8px;">${icons.brain} NeuroFit Ativo</h1>
+                        </div>
+                        <div class="badge badge-purple">${state.history.length} Sessões</div>
+                    </header>
+                    <div class="fade-in" style="display: grid; gap: 16px;">
+                        ${state.workoutOrder.map((wId, i) => {
+                            const w = state.customWorkouts[wId];
+                            if (!w) return '';
+                            return `
+                            <div class="card routine-card" onclick="startWorkout('${w.id}')" style="animation-delay: ${i * 0.1}s">
+                                <div class="flex-between mb-2">
+                                    <div style="display:flex; align-items:center; gap: 10px;">
+                                        <h2>Treino ${w.id}</h2>
+                                    </div>
+                                    <div style="display: flex; gap: 4px; z-index: 2;">
+                                        <button class="btn-ghost" style="padding: 6px;" onclick="event.stopPropagation(); moveWorkout(${i}, -1)" ${i === 0 ? 'disabled' : ''}>${icons.up}</button>
+                                        <button class="btn-ghost" style="padding: 6px;" onclick="event.stopPropagation(); moveWorkout(${i}, 1)" ${i === state.workoutOrder.length - 1 ? 'disabled' : ''}>${icons.down}</button>
+                                        <button class="btn-ghost" style="padding: 6px; color: var(--accent-primary);" onclick="event.stopPropagation(); navigateEditRoutine('${w.id}')">${icons.edit}</button>
+                                    </div>
+                                </div>
+                                <div class="flex-between">
+                                    <p class="text-secondary" style="font-weight: 500;">${w.name}</p>
+                                    <span class="badge badge-warning">${w.exercises.length} Ex</span>
+                                </div>
+                            </div>
+                            `
+                        }).join('')}
+                    </div>
+                    <div class="sync-panel fade-in" style="animation-delay: 0.5s">
+                        <button class="btn btn-ghost" onclick="navigate('history')">${icons.history} Histórico</button>
+                        <button class="btn btn-ghost" onclick="navigate('settings')">${icons.settings} Algoritmo</button>
+                        <button class="btn btn-ghost" onclick="navigate('simulator')">${icons.calculator} Simulador</button>
+                        <button class="btn btn-ghost" onclick="exportData()">${icons.download} Exportar</button>
+                        <button class="btn btn-ghost" onclick="importData()">${icons.upload} Importar</button>
+                    </div>
+                `;
+            }
+            else if (state.screen === 'simulator') {
+                app.innerHTML = `
+                    <header class="slide-up">
+                        <button class="back-btn" onclick="navigate('home')">${icons.arrowLeft}</button>
+                        <h2>Simulador de Carga</h2>
+                    </header>
+                    <div class="card fade-in">
+                        <p class="text-sm text-secondary mb-4">Teste a matemática do Deload Contextual e Sobrecarga inserindo dados de um exercício hipotético.</p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px;">
+                            <div class="input-group" style="margin-bottom:0;">
+                                <label>Reps Alvo</label>
+                                <input type="text" class="generic-input" value="${state.simulator.reps}" onchange="state.simulator.reps = this.value">
+                            </div>
+                            <div class="input-group" style="margin-bottom:0;">
+                                <label>Séries</label>
+                                <input type="number" class="generic-input" value="${state.simulator.sets}" onchange="state.simulator.sets = parseInt(this.value)">
+                            </div>
+                            <div class="input-group" style="margin-bottom:0;">
+                                <label>Step (kg)</label>
+                                <input type="number" class="generic-input" value="${state.simulator.step}" onchange="state.simulator.step = parseFloat(this.value)">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label style="display:block; margin-bottom: 8px;">Séries Realizadas (Carga / Reps)</label>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${state.simulator.logs.map((log, i) => `
+                                    <div style="display:flex; gap:8px; align-items:center;">
+                                        <span class="badge badge-purple" style="min-width: 40px; justify-content:center;">S${i+1}</span>
+                                        <input type="number" class="generic-input" value="${log.w}" placeholder="Carga (kg)" onchange="state.simulator.logs[${i}].w = parseFloat(this.value)">
+                                        <input type="number" class="generic-input" value="${log.r}" placeholder="Reps" onchange="state.simulator.logs[${i}].r = parseInt(this.value)">
+                                        <button class="btn-ghost" style="color:var(--accent-danger);" onclick="state.simulator.logs.splice(${i}, 1); render();">${icons.trash}</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="btn btn-outline mt-2" onclick="state.simulator.logs.push({w: 0, r: 0}); render();" style="width: auto; font-size: 0.85rem; padding: 10px 16px;">${icons.plus} Adicionar Série</button>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="runSimulation()">${icons.calculator} Avaliar Progressão</button>
+                        
+                        <div id="sim_result" class="mt-4"></div>
+                    </div>
+                `;
+            }
+            else if (state.screen === 'edit_routine') {
+                const wData = state.customWorkouts[state.editRoutineId];
+                app.innerHTML = `
+                    <header class="slide-up">
+                        <button class="back-btn" onclick="navigate('home')">${icons.arrowLeft}</button>
+                        <div style="text-align: right;">
+                            <h2>Editar ${wData.id}</h2>
+                            <p class="text-sm text-muted">Ajuste de nomenclaturas e blocos</p>
+                        </div>
+                    </header>
+                    <div class="fade-in">
+                        ${wData.exercises.map((ex, i) => `
+                            <div class="card" style="padding: 16px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 12px; animation-delay: ${i * 0.05}s">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                                    <input class="generic-input" style="flex: 1; padding: 10px; font-weight: 600;" value="${ex.name}" onchange="updateExField('${wData.id}', ${i}, 'name', this.value)" placeholder="Nome do Exercício">
+                                    <div style="display: flex; gap: 4px;">
+                                        <button class="btn-ghost" style="padding: 8px; border: 1px solid var(--bg-elevated);" onclick="moveExercise(${i}, -1)" ${i === 0 ? 'disabled' : ''}>${icons.up}</button>
+                                        <button class="btn-ghost" style="padding: 8px; border: 1px solid var(--bg-elevated);" onclick="moveExercise(${i}, 1)" ${i === wData.exercises.length - 1 ? 'disabled' : ''}>${icons.down}</button>
+                                        <button class="btn-ghost" style="padding: 8px; border: 1px solid rgba(239, 68, 68, 0.3); color: var(--accent-danger);" onclick="deleteExercise('${wData.id}', ${i})">${icons.trash}</button>
+                                    </div>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                                    <div>
+                                        <label>Séries</label>
+                                        <input type="number" class="generic-input" style="padding: 8px;" value="${ex.sets}" onchange="updateExField('${wData.id}', ${i}, 'sets', parseInt(this.value) || 0)">
+                                    </div>
+                                    <div>
+                                        <label>Reps</label>
+                                        <input type="text" class="generic-input" style="padding: 8px;" value="${ex.reps}" onchange="updateExField('${wData.id}', ${i}, 'reps', this.value)">
+                                    </div>
+                                    <div>
+                                        <label>Rest (s)</label>
+                                        <input type="number" class="generic-input" style="padding: 8px;" value="${ex.rest}" onchange="updateExField('${wData.id}', ${i}, 'rest', parseInt(this.value) || 120)">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label>Instruções Técnicas</label>
+                                    <textarea class="generic-input" style="padding: 8px; resize: vertical; min-height: 50px;" onchange="updateExField('${wData.id}', ${i}, 'instructions', this.value)" placeholder="Anotações para a execução">${ex.instructions || ''}</textarea>
+                                </div>
+
+                                <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-dark); padding: 8px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--bg-elevated);">
+                                    <label style="font-size: 0.75rem; margin: 0;">Salto de Peso (Step)</label>
+                                    <select class="generic-input" style="width: auto; padding: 4px 24px 4px 8px; font-size: 0.85rem;" onchange="updateExerciseStep('${wData.id}', ${i}, this.value)">
+                                        <option value="0.5" ${ex.step === 0.5 ? 'selected' : ''}>0.5 kg</option>
+                                        <option value="1" ${ex.step === 1 ? 'selected' : ''}>1 kg</option>
+                                        <option value="2" ${ex.step === 2 ? 'selected' : ''}>2 kg</option>
+                                        <option value="2.5" ${ex.step === 2.5 ? 'selected' : ''}>2.5 kg</option>
+                                        <option value="4" ${ex.step === 4 ? 'selected' : ''}>4 kg</option>
+                                        <option value="5" ${ex.step === 5 ? 'selected' : ''}>5 kg</option>
+                                        <option value="6" ${ex.step === 6 ? 'selected' : ''}>6 kg</option>
+                                        <option value="10" ${ex.step === 10 ? 'selected' : ''}>10 kg</option>
+                                    </select>
+                                </div>
+                            </div>
+                        `).join('')}
+                        
+                        <button class="btn btn-outline" style="border-style: dashed;" onclick="addExercise('${wData.id}')">${icons.plus} Adicionar Novo Exercício</button>
+                    </div>
+                `;
+            }
+            else if (state.screen === 'history') {
+                app.innerHTML = `
+                    <header class="slide-up">
+                        <button class="back-btn" onclick="navigate('home')">${icons.arrowLeft}</button>
+                        <h2>Histórico de Treinos</h2>
+                    </header>
+                    <div class="fade-in">
+                        ${state.history.length === 0 ? '<p class="text-center text-muted mt-4">Nenhum treino guardado ainda.</p>' : ''}
+                        ${state.history.slice().reverse().map((h, i) => `
+                            <div class="card" style="animation-delay: ${i * 0.05}s">
+                                <div class="flex-between mb-2">
+                                    <h3>${h.routine}</h3>
+                                    <button class="btn btn-ghost" style="color: var(--accent-danger); padding: 8px;" onclick="deleteHistory(${h.id})">${icons.trash}</button>
+                                </div>
+                                <p class="text-sm text-secondary mb-2">${new Date(h.date).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' })}</p>
+                                <div class="badge badge-success">${h.log.length} Séries Completas</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            else if (state.screen === 'settings') {
+                app.innerHTML = `
+                    <header class="slide-up">
+                        <button class="back-btn" onclick="navigate('home')">${icons.arrowLeft}</button>
+                        <h2>Mecânica Avançada</h2>
+                    </header>
+                    <div class="card fade-in">
+                        <p class="text-sm text-secondary mb-4">
+                            O sistema utiliza a <strong>Equação de Wathen</strong> para calibração inicial (1RM) e a <strong>Matriz de Volume Global (Deload Contextual)</strong> para progressão de carga.
+                        </p>
+                        
+                        <div class="highlight-box mt-4" style="border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.1);">
+                            <p class="text-purple text-sm" style="color: var(--accent-purple); font-weight: 600; display: flex; align-items: center; gap: 6px;">${icons.brain} Lógica Contextual Ativa</p>
+                            <p class="text-secondary text-sm mt-2">
+                                O peso da próxima sessão não é mais ditado por uma série isolada. O algoritmo cruza a força bruta da sua <strong>Primeira Série (Top Set)</strong> com a sua resistência à fadiga baseada no <strong>Volume Total das Repetições</strong>.
+                            </p>
+                            <p class="text-secondary text-sm mt-2">
+                                Se você aguentar o volume sem quebrar mais de 15% na performance geral, o peso sobe. Se a quebra for superior a 20%, o sistema prescreve um Deload adaptativo baseado no melhor 1RM daquela sessão.
+                            </p>
+                        </div>
+                        
+                        <div class="highlight-box mt-4">
+                            <p class="text-warning text-sm" style="font-weight: 600; display: flex; align-items: center; gap: 6px;">${icons.alert} Incremento Dinâmico</p>
+                            <p class="text-secondary text-sm mt-2">
+                                Lembre-se: os incrementos de peso das máquinas não são mais globais. Você pode definir o "Step" exato (Ex: 0.5kg, 2.5kg, 5kg) individualmente dentro da tela de "Editar Rotina".
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+            else if (state.screen === 'workout') {
+                const wData = state.customWorkouts[state.workoutId];
+                if (!wData.exercises || wData.exercises.length === 0) {
+                    navigate('home');
+                    return;
+                }
+                const ex = wData.exercises[state.exIndex];
+                const step = ex.step || 2.5; 
+                
+                const totalSetsInWorkout = wData.exercises.reduce((acc, curr) => acc + curr.sets, 0);
+                const currentSetIndex = state.sessionLog.filter(log => log.exId === ex.id).length;
+                const progPct = Math.min((state.sessionLog.length / totalSetsInWorkout) * 100, 100);
+                const isCompleted = currentSetIndex >= ex.sets;
+
+                const needs1RM = !(state.progress[ex.id] && state.progress[ex.id].hasTested1RM);
+                const isLastSet = currentSetIndex === ex.sets - 1;
+                const isIntense = ex.isIntense || false;
+
+                if (state.isResting) {
+                    app.innerHTML = `
+                        <div class="container fade-in" style="justify-content: center; align-items: center; padding-top: 10vh;">
+                            <h2 class="text-muted mb-4" style="text-transform: uppercase; letter-spacing: 2px;">Recuperação do SNC</h2>
+                            
+                            <div class="timer-container">
+                                <div class="breathing-ring ring-pulse">
+                                    <div class="timer-display" id="timer-display">${formatTime(state.timeLeft)}</div>
+                                </div>
+                                <div class="somatic-label" id="somatic-label">INSPIRAR</div>
+                            </div>
+
+                            <div class="card" style="width: 100%; max-width: 400px; text-align: center; margin-top: 40px;">
+                                <p class="text-sm text-secondary mb-2">Próximo na fila:</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                                    <button class="btn-ghost" onclick="cycleExercise(-1)" style="padding: 8px;">${icons.chevronLeft}</button>
+                                    <h3 style="color: white; flex: 1;">${ex.name}</h3>
+                                    <button class="btn-ghost" onclick="cycleExercise(1)" style="padding: 8px;">${icons.chevronRight}</button>
+                                </div>
+                                <button class="btn btn-outline" onclick="skipRest()">${icons.skip} Ignorar Recuperação</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                app.innerHTML = `
+                    <header class="slide-up">
+                        <button class="back-btn" onclick="finishWorkout()">${icons.arrowLeft}</button>
+                        <div style="text-align: right;">
+                            <h2 class="text-secondary" style="font-size: 1rem;">Protocolo ${wData.id}</h2>
+                            <span class="text-xs text-muted" style="font-weight: 600;">Série ${Math.min(currentSetIndex + 1, ex.sets)} de ${ex.sets}</span>
+                        </div>
+                    </header>
+
+                    <div class="progress-container slide-up"><div class="progress-bar" style="width: ${progPct}%"></div></div>
+                    
+                    <div class="card slide-up">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px;">
+                            <button class="btn-ghost" onclick="cycleExercise(-1)" style="padding: 8px; border: 1px solid rgba(255,255,255,0.05);">${icons.chevronLeft}</button>
+                            <h3 style="font-size: 1.25rem; line-height: 1.3; text-align: center; flex: 1;">${ex.name}</h3>
+                            <button class="btn-ghost" onclick="cycleExercise(1)" style="padding: 8px; border: 1px solid rgba(255,255,255,0.05);">${icons.chevronRight}</button>
+                        </div>
+
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                            <span class="badge badge-purple">Alvo: ${ex.reps}</span>
+                            <span class="badge" style="background: rgba(255,255,255,0.05);">${ex.rest}s Descanso</span>
+                        </div>
+                        ${ex.instructions ? `<div class="highlight-box mt-4"><p class="text-warning text-sm" style="font-weight: 600; display: flex; align-items: center; gap: 6px;">${icons.alert} Dica: ${ex.instructions}</p></div>` : ''}
+                    </div>
+
+                    ${isCompleted ? `
+                    <div class="card slide-up" style="text-align: center; border-color: var(--accent-success); background: rgba(16, 185, 129, 0.05);">
+                        <h3 class="text-success mb-2" style="display: flex; justify-content: center; align-items: center; gap: 8px;">${icons.check} Exercício Concluído</h3>
+                        <p class="text-secondary text-sm mb-4">Você já finalizou todas as ${ex.sets} séries deste exercício nesta sessão.</p>
+                        <button class="btn btn-outline" onclick="cycleExercise(1)">Pular para o Próximo</button>
+                    </div>
+                    ` : (needs1RM ? `
+                    <div class="card slide-up" style="border: 1px dashed var(--accent-warning); background: rgba(245, 158, 11, 0.05);">
+                        <div class="flex-between mb-2">
+                            <h3 class="text-warning">Análise Inicial (Wathen)</h3>
+                            ${icons.alert}
+                        </div>
+                        <p class="text-sm text-secondary mb-4">Insira dados de uma série submáxima para calibrar a matriz de sobrecarga.</p>
+                        
+                        <div class="input-group mb-4">
+                            <label>Salto de Peso (Step) para este Exercício</label>
+                            <select class="generic-input" style="padding: 10px; font-size: 0.9rem;" onchange="updateExStepInWorkout('${ex.id}', this.value)">
+                                <option value="0.5" ${step === 0.5 ? 'selected' : ''}>0.5 kg</option>
+                                <option value="1" ${step === 1 ? 'selected' : ''}>1 kg</option>
+                                <option value="2" ${step === 2 ? 'selected' : ''}>2 kg</option>
+                                <option value="2.5" ${step === 2.5 ? 'selected' : ''}>2.5 kg</option>
+                                <option value="4" ${step === 4 ? 'selected' : ''}>4 kg</option>
+                                <option value="5" ${step === 5 ? 'selected' : ''}>5 kg</option>
+                                <option value="6" ${step === 6 ? 'selected' : ''}>6 kg</option>
+                                <option value="10" ${step === 10 ? 'selected' : ''}>10 kg</option>
+                            </select>
+                        </div>
+
+                        <div class="input-row mb-4">
+                            <div class="input-group">
+                                <label>Carga Levantada (kg)</label>
+                                <div class="stepper-control">
+                                    <button class="stepper-btn" onclick="let el = document.getElementById('testWeight'); el.value = Math.max(0, roundToStep(parseFloat(el.value || 0) - ${step}, ${step}))">${icons.minus}</button>
+                                    <input type="number" id="testWeight" step="${step}" placeholder="50" autocomplete="off" onchange="this.value = roundToStep(parseFloat(this.value || 0), ${step})">
+                                    <button class="stepper-btn" onclick="let el = document.getElementById('testWeight'); el.value = roundToStep(parseFloat(el.value || 0) + ${step}, ${step})">${icons.plus}</button>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Reps Executadas</label>
+                                <div class="stepper-control">
+                                    <button class="stepper-btn" onclick="document.getElementById('testReps').value = Math.max(0, parseInt(document.getElementById('testReps').value || 0) - 1)">${icons.minus}</button>
+                                    <input type="number" id="testReps" placeholder="8" autocomplete="off">
+                                    <button class="stepper-btn" onclick="document.getElementById('testReps').value = parseInt(document.getElementById('testReps').value || 0) + 1">${icons.plus}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="execute1RMTest()">Calibrar e Iniciar Volume</button>
+                    </div>
+                    ` : `
+                    <div class="card slide-up ${isIntense ? 'intense-pulse' : ''}">
+                        ${isIntense ? `<div class="flex-between mb-4"><h3 class="text-danger" style="display:flex; align-items:center; gap:8px; text-transform: uppercase; font-size: 0.9rem;">${icons.flame} SÉRIE EXTREMA</h3></div>` : ''}
+                        
+                        ${state.weightStatus === 'increase' ? `<div class="highlight-box mb-4" style="border-color: var(--accent-success); background: rgba(16, 185, 129, 0.1);"><p class="text-success text-sm" style="font-weight: bold; display: flex; align-items: center; gap: 6px;">${icons.up} Desempenho Global validado! Carga escalada.</p></div>` : ''}
+                        ${state.weightStatus === 'decrease' ? `<div class="highlight-box mb-4" style="border-color: var(--accent-danger); background: rgba(239, 68, 68, 0.1);"><p class="text-danger text-sm" style="font-weight: bold; display: flex; align-items: center; gap: 6px;">${icons.down} Intervenção do Algoritmo: Carga recalculada proporcionalmente.</p></div>` : ''}
+                        
+                        <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-dark); padding: 8px 12px; border-radius: var(--border-radius-sm); border: 1px solid var(--bg-elevated); margin-bottom: 16px;">
+                            <label style="font-size: 0.75rem; margin: 0;">Step da Máquina</label>
+                            <select class="generic-input" style="width: auto; padding: 4px 24px 4px 8px; font-size: 0.85rem;" onchange="updateExStepInWorkout('${ex.id}', this.value)">
+                                <option value="0.5" ${step === 0.5 ? 'selected' : ''}>0.5 kg</option>
+                                <option value="1" ${step === 1 ? 'selected' : ''}>1 kg</option>
+                                <option value="2" ${step === 2 ? 'selected' : ''}>2 kg</option>
+                                <option value="2.5" ${step === 2.5 ? 'selected' : ''}>2.5 kg</option>
+                                <option value="4" ${step === 4 ? 'selected' : ''}>4 kg</option>
+                                <option value="5" ${step === 5 ? 'selected' : ''}>5 kg</option>
+                                <option value="6" ${step === 6 ? 'selected' : ''}>6 kg</option>
+                                <option value="10" ${step === 10 ? 'selected' : ''}>10 kg</option>
+                            </select>
+                        </div>
+
+                        <div class="input-row mb-4">
+                            <div class="input-group">
+                                <label>Carga da Série (kg)</label>
+                                <div class="stepper-control">
+                                    <button class="stepper-btn" onclick="adjustWeight(-1)">${icons.minus}</button>
+                                    <input type="number" id="inputWeight" step="${step}" value="${state.inputWeight}" onchange="this.value = roundToStep(parseFloat(this.value || 0), ${step}); state.inputWeight = this.value" oninput="state.inputWeight = this.value">
+                                    <button class="stepper-btn" onclick="adjustWeight(1)">${icons.plus}</button>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Concluídas</label>
+                                <div class="stepper-control">
+                                    <button class="stepper-btn" onclick="adjustReps(-1)">${icons.minus}</button>
+                                    <input type="number" id="inputReps" value="${state.inputReps}" oninput="state.inputReps = this.value">
+                                    <button class="stepper-btn" onclick="adjustReps(1)">${icons.plus}</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn ${isIntense ? 'btn-outline' : 'btn-primary'}" onclick="completeSet()" style="margin-top: 10px; ${isIntense ? 'border-color: var(--accent-danger); color: var(--accent-danger);' : ''}">
+                            ${icons.check} ${isIntense ? 'Sobrevivi à Série' : 'Consolidar Série'}
+                        </button>
+                    </div>
+                    `)}
+                `;
+            }
+
+            if (state.modal) {
+                const modalHtml = document.createElement('div');
+                modalHtml.style.cssText = "position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;";
+                modalHtml.innerHTML = `
+                    <div class="card slide-up" style="width: 100%; max-width: 350px; text-align: center; border: 1px solid var(--accent-primary); box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);">
+                        <h3 class="mb-4" style="line-height: 1.4; font-size: 1rem;">${state.modal.message}</h3>
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            ${state.modal.type === 'confirm' ? '<button class="btn btn-outline" onclick="closeModal()">Cancelar</button>' : ''}
+                            <button class="btn btn-primary" onclick="confirmModal()">OK</button>
+                        </div>
+                    </div>
+                `;
+                app.appendChild(modalHtml);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            recalculateProgress();
+            render();
+        });
+    </script>
+</body>
+</html>
