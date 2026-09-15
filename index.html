@@ -121,8 +121,6 @@
     </div>
 
     <script>
-    
-    // --- NOVO REGISTRO DO SERVICE WORKER ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -132,30 +130,53 @@
     }
     
         const defaultWorkoutData = {
-            A: {
-                id: 'A', name: 'Treino A - Membros Superiores',
+            UpperA: {
+                id: 'Upper A', name: 'Peito, Costas, Ombro e Braços (Segunda)',
                 exercises: [
-                    { id: 'A1', name: 'Supino Inclinado + Halteres', sets: 4, reps: '8 a 12', rest: 120, step: 2.5, instructions: 'Lordose natural cravada na almofada. Banco 30° a 45°. Sem leg drive agressivo para evitar arqueamento lombar.' },
-                    { id: 'A2', name: 'Supino Reto na Máquina', sets: 4, reps: '10 a 15', rest: 120, step: 5, instructions: 'Encosto fornece suporte total. Compressão intervertebral nula. Tensão constante no peitoral.' },
-                    { id: 'A3', name: 'Remada Baixa Sentada', sets: 4, reps: '8 a 12', rest: 120, step: 5, instructions: 'Manter a pelve travada e o core rígido. Evitar balançar o tronco para frente/trás para zerar a tensão na lombar.' },
-                    { id: 'A4', name: 'Puxada Frontal Polia Alta', sets: 4, reps: '10 a 15', rest: 120, step: 5, instructions: 'Trancar as coxas forçosamente no suporte. Evitar jogar o tronco para trás para puxar a carga.' },
-                    { id: 'A5', name: 'Elevação Lateral', sets: 4, reps: '12 a 20', rest: 120, step: 1, instructions: 'Execução estrita. Corpo recostado ou estabilizado para eliminar o balanço (roubo) e proteger a lombar.' },
-                    { id: 'A6', name: 'Biset: Rosca Direta + Tríceps Corda', sets: 4, reps: '10 a 15', rest: 120, step: 2.5, instructions: 'Exercícios executados em sequência (Biset) até próximo à falha mecânica.', isIntense: true }
+                    { id: 'UA1', name: 'Supino Reto Máquina', sets: 3, reps: '6 a 10', rest: 180, step: 5, instructions: '(RIR 2) Escápulas apoiadas, pés firmes; desça controlado e empurre sem contorcer o tronco. Principal exercício de força/hipertrofia do dia.' },
+                    { id: 'UA2', name: 'Supino Inclinado com Halteres', sets: 2, reps: '8 a 12', rest: 120, step: 2, instructions: '(RIR 2) 20-30°. Cotovelos em posição confortável; toque a amplitude que mantém ombro e lombar confortáveis. Não precisa usar 45°.' },
+                    { id: 'UA3', name: 'Remada Máquina Sentada', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 2) Tronco estável; puxe cotovelos para trás sem embalo.' },
+                    { id: 'UA4', name: 'Puxada Alta à Frente', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 2) Puxe em direção à parte alta do peito; evite jogar o tronco para trás. Não balance a lombar para completar a repetição.' },
+                    { id: 'UA5', name: 'Elevação Lateral no Cabo ou Halteres', sets: 3, reps: '12 a 20', rest: 90, step: 1, instructions: '(RIR 1-2) Suba sem balanço; braço ligeiramente à frente do tronco. Prioridade estética.' },
+                    { id: 'UA6', name: 'Rosca no Cabo', sets: 3, reps: '10 a 15', rest: 90, step: 2.5, instructions: '(RIR 1-2) Cotovelos estáveis; estenda controladamente. Sem projetar o quadril.' },
+                    { id: 'UA7', name: 'Tríceps Corda', sets: 2, reps: '10 a 15', rest: 90, step: 2.5, instructions: '(RIR 1-2) Braços junto ao corpo; estenda sem movimentar o ombro. Pode alternar com a rosca para economizar tempo.' }
                 ]
             },
-            B: {
-                id: 'B', name: 'Treino B - Membros Inferiores',
+            LowerA: {
+                id: 'Lower A', name: 'Quadríceps, Posteriores e Panturrilha (Terça)',
                 exercises: [
-                    { id: 'B1', name: 'Leg Press 45°', sets: 5, reps: '8 a 15', rest: 120, step: 10, instructions: 'Evitar descer demais a ponto de tirar o quadril do banco (butt wink). Manter lombar grudada no encosto.' },
-                    { id: 'B2', name: 'Agachamento Búlgaro', sets: 4, reps: '10 a 12', rest: 120, step: 2.5, instructions: '2 séries por perna. Carga reduzida no tronco. Leve inclinação à frente para focar no glúteo e esgotar o quadríceps.' },
-                    { id: 'B3', name: 'Cadeira Extensora', sets: 4, reps: '12 a 20', rest: 120, step: 5, instructions: 'Coluna 100% protegida de compressão. Isolamento puro e tensão muscular máxima na subida.' },
-                    { id: 'B4', name: 'Cadeira Flexora (Sentado)', sets: 4, reps: '10 a 15', rest: 120, step: 5, instructions: 'Alongamento exato do feixe posterior. Manter a postura alinhada no encosto.' },
-                    { id: 'B5', name: 'Panturrilha em Pé', sets: 6, reps: 'Até a falha', rest: 120, step: 5, instructions: 'Toda a pressão concentrada nos joelhos/panturrilhas, sem peso transversal ou axial sobre os ombros e coluna.' }
+                    { id: 'LA1', name: 'Leg Press', sets: 3, reps: '8 a 12', rest: 180, step: 10, instructions: '(RIR 2) Pés estáveis; joelhos acompanham os pés; desça até onde pelve/lombar permaneçam confortáveis.' },
+                    { id: 'LA2', name: 'Cadeira Extensora', sets: 2, reps: '10 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Estenda o joelho de forma controlada e retorne sem soltar o peso.' },
+                    { id: 'LA3', name: 'Cadeira Flexora (Sentada)', sets: 3, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 1-2) Quadril apoiado; flexione sem levantar do assento.' },
+                    { id: 'LA4', name: 'Máquina Abdutora', sets: 2, reps: '12 a 20', rest: 90, step: 5, instructions: '(RIR 1-2) Abra as pernas sem impulso e controle a volta.' },
+                    { id: 'LA5', name: 'Máquina de Panturrilha', sets: 3, reps: '8 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Desça controladamente, faça amplitude confortável e evite quicar.' }
+                ]
+            },
+            UpperB: {
+                id: 'Upper B', name: 'Peito, Ombros e Bíceps (Quinta)',
+                exercises: [
+                    { id: 'UB1', name: 'Supino Inclinado no Smith', sets: 3, reps: '6 a 10', rest: 180, step: 2.5, instructions: '(RIR 2) 20-30°. Banco bem posicionado; desça controlado; não transforme a repetição em arco lombar exagerado. Estável e fácil de progredir sozinho.' },
+                    { id: 'UB2', name: 'Peck Deck', sets: 2, reps: '10 a 15', rest: 120, step: 5, instructions: '(RIR 1-2) Abra até alongamento confortável; feche sem projetar os ombros. Pare antes de qualquer desconforto anterior no ombro.' },
+                    { id: 'UB3', name: 'Puxada Alta', sets: 2, reps: '10 a 15', rest: 120, step: 5, instructions: '(RIR 2) Cotovelos descem em direção ao tronco; sem balanço. Pode variar a pegada confortável entre os dias.' },
+                    { id: 'UB4', name: 'Remada Máquina ou Baixa no Cabo', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 2) Tronco estável; sem impulso lombar. Use a versão diferente de segunda caso existam duas boas máquinas.' },
+                    { id: 'UB5', name: 'Elevação Lateral', sets: 3, reps: '12 a 20', rest: 90, step: 1, instructions: '(RIR 1-2) Movimento estrito e controlado. Segunda exposição semanal.' },
+                    { id: 'UB6', name: 'Rosca Martelo com Halteres', sets: 3, reps: '8 a 12', rest: 90, step: 2, instructions: '(RIR 1-2) Punho neutro e cotovelo estável. Complementa a rosca de segunda.' },
+                    { id: 'UB7', name: 'Tríceps Corda', sets: 2, reps: '10 a 15', rest: 90, step: 2.5, instructions: '(RIR 1-2) Extenda sem movimentar o braço para frente/trás. Faça em superset com a rosca.' }
+                ]
+            },
+            LowerB: {
+                id: 'Lower B', name: 'Pernas Completas (Sexta)',
+                exercises: [
+                    { id: 'LB1', name: 'Leg Press', sets: 3, reps: '10 a 15', rest: 180, step: 10, instructions: '(RIR 2) Mesmas referências de terça; sem rebater no fundo. Repetições um pouco maiores que na terça.' },
+                    { id: 'LB2', name: 'Cadeira Extensora', sets: 2, reps: '12 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Controle subida e descida. Não chutar explosivamente.' },
+                    { id: 'LB3', name: 'Cadeira Flexora', sets: 3, reps: '10 a 15', rest: 120, step: 5, instructions: '(RIR 1-2) Quadril e tronco estáveis. Segunda exposição semanal.' },
+                    { id: 'LB4', name: 'Máquina Adutora', sets: 2, reps: '12 a 20', rest: 90, step: 5, instructions: '(RIR 1-2) Feche as pernas controladamente e volte sem bater os pesos. Acessório de baixo risco técnico.' },
+                    { id: 'LB5', name: 'Máquina de Panturrilha', sets: 3, reps: '10 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Alongue de forma confortável, suba e desça sem balanço. Segunda exposição semanal.' }
                 ]
             }
         };
 
-        const defaultWorkoutOrder = ['A', 'B'];
+        const defaultWorkoutOrder = ['UpperA', 'LowerA', 'UpperB', 'LowerB'];
         const defaultSettings = {}; 
 
         const parseReps = (repsStr) => {
@@ -241,8 +262,6 @@
                 let finalDeloadWeight = roundToStep(targetWeightForMinReps, machineStep);
 
                 // --- TRAVA DE SEGURANÇA ABSOLUTA ---
-                // Se TODAS as séries falharam (nenhuma atingiu o R_min), o algoritmo é proibido
-                // de recomendar um peso igual ou maior ao menor peso que causou falha na sessão.
                 let allFailed = true;
                 let minFailedWeight = Infinity;
                 exerciseLogs.forEach(log => {
@@ -273,6 +292,7 @@
             }
         };
 
+        // NOTA: As keys do local storage foram atualizadas para "_v2" para resetar automaticamente e carregar o novo treino
         let state = {
             screen: 'home',
             workoutId: null,
@@ -285,11 +305,11 @@
             weightStatus: 'normal',
             sessionLog: [],
             modal: null,
-            settings: JSON.parse(localStorage.getItem('neurofit_settings')) || defaultSettings,
-            progress: JSON.parse(localStorage.getItem('neurofit_progress')) || {},
-            history: JSON.parse(localStorage.getItem('neurofit_history')) || [],
-            customWorkouts: JSON.parse(localStorage.getItem('neurofit_customWorkouts')) || JSON.parse(JSON.stringify(defaultWorkoutData)),
-            workoutOrder: JSON.parse(localStorage.getItem('neurofit_workoutOrder')) || defaultWorkoutOrder,
+            settings: JSON.parse(localStorage.getItem('neurofit_v2_settings')) || defaultSettings,
+            progress: JSON.parse(localStorage.getItem('neurofit_v2_progress')) || {},
+            history: JSON.parse(localStorage.getItem('neurofit_v2_history')) || [],
+            customWorkouts: JSON.parse(localStorage.getItem('neurofit_v2_customWorkouts')) || JSON.parse(JSON.stringify(defaultWorkoutData)),
+            workoutOrder: JSON.parse(localStorage.getItem('neurofit_v2_workoutOrder')) || defaultWorkoutOrder,
             simulator: { reps: '10 a 12', sets: 4, step: 2, logs: [{w: 10, r: 4}, {w: 10, r: 4}, {w: 6, r: 8}, {w: 6, r: 8}] }
         };
         
@@ -297,11 +317,11 @@
         let somaticBreathInterval = null;
         let breathState = 'INSPIRAR';
 
-        const saveProgress = () => localStorage.setItem('neurofit_progress', JSON.stringify(state.progress));
-        const saveHistory = () => localStorage.setItem('neurofit_history', JSON.stringify(state.history));
-        const saveSettingsForm = () => { localStorage.setItem('neurofit_settings', JSON.stringify(state.settings)); navigate('home'); };
-        const saveCustomWorkouts = () => localStorage.setItem('neurofit_customWorkouts', JSON.stringify(state.customWorkouts));
-        const saveWorkoutOrder = () => localStorage.setItem('neurofit_workoutOrder', JSON.stringify(state.workoutOrder));
+        const saveProgress = () => localStorage.setItem('neurofit_v2_progress', JSON.stringify(state.progress));
+        const saveHistory = () => localStorage.setItem('neurofit_v2_history', JSON.stringify(state.history));
+        const saveSettingsForm = () => { localStorage.setItem('neurofit_v2_settings', JSON.stringify(state.settings)); navigate('home'); };
+        const saveCustomWorkouts = () => localStorage.setItem('neurofit_v2_customWorkouts', JSON.stringify(state.customWorkouts));
+        const saveWorkoutOrder = () => localStorage.setItem('neurofit_v2_workoutOrder', JSON.stringify(state.workoutOrder));
 
         const exportData = () => {
             const dataToExport = {
@@ -1150,3 +1170,4 @@
     </script>
 </body>
 </html>
+```eof
