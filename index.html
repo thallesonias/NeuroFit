@@ -121,6 +121,8 @@
     </div>
 
     <script>
+    
+    // --- NOVO REGISTRO DO SERVICE WORKER ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -129,54 +131,61 @@
         });
     }
     
+        const WORKOUT_PLAN_VERSION = 'plano-pdf-2026-09-v1';
         const defaultWorkoutData = {
-            UpperA: {
-                id: 'Upper A', name: 'Peito, Costas, Ombro e Braços (Segunda)',
+            A: {
+                id: 'A', name: 'Segunda-feira - Upper A',
                 exercises: [
-                    { id: 'UA1', name: 'Supino Reto Máquina', sets: 3, reps: '6 a 10', rest: 180, step: 5, instructions: '(RIR 2) Escápulas apoiadas, pés firmes; desça controlado e empurre sem contorcer o tronco. Principal exercício de força/hipertrofia do dia.' },
-                    { id: 'UA2', name: 'Supino Inclinado com Halteres', sets: 2, reps: '8 a 12', rest: 120, step: 2, instructions: '(RIR 2) 20-30°. Cotovelos em posição confortável; toque a amplitude que mantém ombro e lombar confortáveis. Não precisa usar 45°.' },
-                    { id: 'UA3', name: 'Remada Máquina Sentada', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 2) Tronco estável; puxe cotovelos para trás sem embalo.' },
-                    { id: 'UA4', name: 'Puxada Alta à Frente', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 2) Puxe em direção à parte alta do peito; evite jogar o tronco para trás. Não balance a lombar para completar a repetição.' },
-                    { id: 'UA5', name: 'Elevação Lateral no Cabo ou Halteres', sets: 3, reps: '12 a 20', rest: 90, step: 1, instructions: '(RIR 1-2) Suba sem balanço; braço ligeiramente à frente do tronco. Prioridade estética.' },
-                    { id: 'UA6', name: 'Rosca no Cabo', sets: 3, reps: '10 a 15', rest: 90, step: 2.5, instructions: '(RIR 1-2) Cotovelos estáveis; estenda controladamente. Sem projetar o quadril.' },
-                    { id: 'UA7', name: 'Tríceps Corda', sets: 2, reps: '10 a 15', rest: 90, step: 2.5, instructions: '(RIR 1-2) Braços junto ao corpo; estenda sem movimentar o ombro. Pode alternar com a rosca para economizar tempo.' }
+                    { id: 'UA1', name: 'Supino Reto na Máquina', sets: 3, reps: '6 a 10', rest: 180, step: 5, instructions: 'Escápulas apoiadas e pés firmes. Desça controlado e empurre sem contorcer o tronco. Trabalhe em 2 RIR.' },
+                    { id: 'UA2', name: 'Supino Inclinado com Halteres (20–30°)', sets: 2, reps: '8 a 12', rest: 150, step: 2, instructions: 'Cotovelos em posição confortável. Use a amplitude que mantém ombros e lombar confortáveis. Trabalhe em 2 RIR.' },
+                    { id: 'UA3', name: 'Remada na Máquina Sentada', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: 'Mantenha o tronco estável e puxe os cotovelos para trás sem usar embalo lombar. Trabalhe em 2 RIR.' },
+                    { id: 'UA4', name: 'Puxada Alta à Frente', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: 'Puxe em direção à parte alta do peito, com pegada neutra ou pronada confortável, sem jogar o tronco para trás. Trabalhe em 2 RIR.' },
+                    { id: 'UA5', name: 'Elevação Lateral no Cabo ou com Halteres', sets: 3, reps: '12 a 20', rest: 90, step: 1, instructions: 'Suba sem balanço, com o braço ligeiramente à frente do tronco. Trabalhe em 1–2 RIR.' },
+                    { id: 'UA6', name: 'Rosca no Cabo', sets: 3, reps: '10 a 15', rest: 90, step: 2.5, instructions: 'Mantenha os cotovelos estáveis e estenda controladamente, sem projetar o quadril. Trabalhe em 1–2 RIR. Pode alternar com o tríceps corda.' },
+                    { id: 'UA7', name: 'Tríceps Corda', sets: 2, reps: '10 a 15', rest: 90, step: 2.5, instructions: 'Braços junto ao corpo; estenda sem movimentar o ombro. Trabalhe em 1–2 RIR. No superset: rosca, 15–30 s para trocar, tríceps e 60–90 s antes de repetir.' }
                 ]
             },
-            LowerA: {
-                id: 'Lower A', name: 'Quadríceps, Posteriores e Panturrilha (Terça)',
+            B: {
+                id: 'B', name: 'Terça-feira - Lower A',
                 exercises: [
-                    { id: 'LA1', name: 'Leg Press', sets: 3, reps: '8 a 12', rest: 180, step: 10, instructions: '(RIR 2) Pés estáveis; joelhos acompanham os pés; desça até onde pelve/lombar permaneçam confortáveis.' },
-                    { id: 'LA2', name: 'Cadeira Extensora', sets: 2, reps: '10 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Estenda o joelho de forma controlada e retorne sem soltar o peso.' },
-                    { id: 'LA3', name: 'Cadeira Flexora (Sentada)', sets: 3, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 1-2) Quadril apoiado; flexione sem levantar do assento.' },
-                    { id: 'LA4', name: 'Máquina Abdutora', sets: 2, reps: '12 a 20', rest: 90, step: 5, instructions: '(RIR 1-2) Abra as pernas sem impulso e controle a volta.' },
-                    { id: 'LA5', name: 'Máquina de Panturrilha', sets: 3, reps: '8 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Desça controladamente, faça amplitude confortável e evite quicar.' }
+                    { id: 'LA1', name: 'Leg Press', sets: 3, reps: '8 a 12', rest: 180, step: 10, instructions: 'Pés estáveis e joelhos acompanhando os pés. Desça somente até onde pelve e lombar permaneçam confortáveis. Trabalhe em 2 RIR.' },
+                    { id: 'LA2', name: 'Cadeira Extensora', sets: 2, reps: '10 a 15', rest: 90, step: 5, instructions: 'Estenda o joelho de forma controlada e retorne sem soltar o peso. Trabalhe em 1–2 RIR.' },
+                    { id: 'LA3', name: 'Cadeira Flexora Sentada', sets: 3, reps: '8 a 12', rest: 120, step: 5, instructions: 'Mantenha o quadril apoiado e flexione sem levantar do assento. Trabalhe em 1–2 RIR.' },
+                    { id: 'LA4', name: 'Máquina Abdutora', sets: 2, reps: '12 a 20', rest: 90, step: 5, instructions: 'Abra as pernas sem impulso e controle a volta. Trabalhe em 1–2 RIR.' },
+                    { id: 'LA5', name: 'Máquina de Panturrilha', sets: 3, reps: '8 a 15', rest: 90, step: 5, instructions: 'Desça controladamente, use amplitude confortável e evite quicar. Trabalhe em 1–2 RIR.' }
                 ]
             },
-            UpperB: {
-                id: 'Upper B', name: 'Peito, Ombros e Bíceps (Quinta)',
+            C: {
+                id: 'C', name: 'Quarta-feira - Bicicleta', type: 'cardio',
                 exercises: [
-                    { id: 'UB1', name: 'Supino Inclinado no Smith', sets: 3, reps: '6 a 10', rest: 180, step: 2.5, instructions: '(RIR 2) 20-30°. Banco bem posicionado; desça controlado; não transforme a repetição em arco lombar exagerado. Estável e fácil de progredir sozinho.' },
-                    { id: 'UB2', name: 'Peck Deck', sets: 2, reps: '10 a 15', rest: 120, step: 5, instructions: '(RIR 1-2) Abra até alongamento confortável; feche sem projetar os ombros. Pare antes de qualquer desconforto anterior no ombro.' },
-                    { id: 'UB3', name: 'Puxada Alta', sets: 2, reps: '10 a 15', rest: 120, step: 5, instructions: '(RIR 2) Cotovelos descem em direção ao tronco; sem balanço. Pode variar a pegada confortável entre os dias.' },
-                    { id: 'UB4', name: 'Remada Máquina ou Baixa no Cabo', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: '(RIR 2) Tronco estável; sem impulso lombar. Use a versão diferente de segunda caso existam duas boas máquinas.' },
-                    { id: 'UB5', name: 'Elevação Lateral', sets: 3, reps: '12 a 20', rest: 90, step: 1, instructions: '(RIR 1-2) Movimento estrito e controlado. Segunda exposição semanal.' },
-                    { id: 'UB6', name: 'Rosca Martelo com Halteres', sets: 3, reps: '8 a 12', rest: 90, step: 2, instructions: '(RIR 1-2) Punho neutro e cotovelo estável. Complementa a rosca de segunda.' },
-                    { id: 'UB7', name: 'Tríceps Corda', sets: 2, reps: '10 a 15', rest: 90, step: 2.5, instructions: '(RIR 1-2) Extenda sem movimentar o braço para frente/trás. Faça em superset com a rosca.' }
+                    { id: 'CARDIO1', name: 'Bicicleta Ergométrica', type: 'cardio', sets: 1, reps: '25 a 30', rest: 0, step: 1, instructions: 'Após liberação médica: 5 min muito leve, 15–20 min leve/moderado e 3–5 min leve. Mantenha RPE 3–4/10, conseguindo conversar em frases completas. Nada de HIIT inicialmente.' }
                 ]
             },
-            LowerB: {
-                id: 'Lower B', name: 'Pernas Completas (Sexta)',
+            D: {
+                id: 'D', name: 'Quinta-feira - Upper B',
                 exercises: [
-                    { id: 'LB1', name: 'Leg Press', sets: 3, reps: '10 a 15', rest: 180, step: 10, instructions: '(RIR 2) Mesmas referências de terça; sem rebater no fundo. Repetições um pouco maiores que na terça.' },
-                    { id: 'LB2', name: 'Cadeira Extensora', sets: 2, reps: '12 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Controle subida e descida. Não chutar explosivamente.' },
-                    { id: 'LB3', name: 'Cadeira Flexora', sets: 3, reps: '10 a 15', rest: 120, step: 5, instructions: '(RIR 1-2) Quadril e tronco estáveis. Segunda exposição semanal.' },
-                    { id: 'LB4', name: 'Máquina Adutora', sets: 2, reps: '12 a 20', rest: 90, step: 5, instructions: '(RIR 1-2) Feche as pernas controladamente e volte sem bater os pesos. Acessório de baixo risco técnico.' },
-                    { id: 'LB5', name: 'Máquina de Panturrilha', sets: 3, reps: '10 a 15', rest: 90, step: 5, instructions: '(RIR 1-2) Alongue de forma confortável, suba e desça sem balanço. Segunda exposição semanal.' }
+                    { id: 'UB1', name: 'Supino Inclinado no Smith (20–30°)', sets: 3, reps: '6 a 10', rest: 180, step: 5, instructions: 'Banco bem posicionado; desça controlado e evite arco lombar exagerado. Trabalhe em 2 RIR.' },
+                    { id: 'UB2', name: 'Peck Deck', sets: 2, reps: '10 a 15', rest: 120, step: 5, instructions: 'Abra até um alongamento confortável e feche sem projetar os ombros. Pare antes de qualquer desconforto anterior no ombro. Trabalhe em 1–2 RIR.' },
+                    { id: 'UB3', name: 'Puxada Alta', sets: 2, reps: '10 a 15', rest: 120, step: 5, instructions: 'Desça os cotovelos em direção ao tronco, sem balanço. Use uma pegada confortável. Trabalhe em 2 RIR.' },
+                    { id: 'UB4', name: 'Remada na Máquina ou Baixa no Cabo', sets: 2, reps: '8 a 12', rest: 120, step: 5, instructions: 'Mantenha o tronco estável, sem impulso lombar. Se possível, use uma versão diferente da segunda-feira. Trabalhe em 2 RIR.' },
+                    { id: 'UB5', name: 'Elevação Lateral', sets: 3, reps: '12 a 20', rest: 90, step: 1, instructions: 'Faça o movimento estrito e controlado. Trabalhe em 1–2 RIR.' },
+                    { id: 'UB6', name: 'Rosca Martelo com Halteres', sets: 3, reps: '8 a 12', rest: 90, step: 2, instructions: 'Mantenha o punho neutro e o cotovelo estável. Trabalhe em 1–2 RIR. Pode alternar com o tríceps corda.' },
+                    { id: 'UB7', name: 'Tríceps Corda', sets: 2, reps: '10 a 15', rest: 90, step: 2.5, instructions: 'Estenda sem movimentar o braço para frente ou para trás. Trabalhe em 1–2 RIR. Pode ser feito em superset com a rosca.' }
+                ]
+            },
+            E: {
+                id: 'E', name: 'Sexta-feira - Lower B',
+                exercises: [
+                    { id: 'LB1', name: 'Leg Press', sets: 3, reps: '10 a 15', rest: 180, step: 10, instructions: 'Use as mesmas referências de terça-feira e não rebata no fundo do movimento. Trabalhe em 2 RIR.' },
+                    { id: 'LB2', name: 'Cadeira Extensora', sets: 2, reps: '12 a 15', rest: 90, step: 5, instructions: 'Controle a subida e a descida; não precisa chutar de modo explosivo. Trabalhe em 1–2 RIR.' },
+                    { id: 'LB3', name: 'Cadeira Flexora', sets: 3, reps: '10 a 15', rest: 120, step: 5, instructions: 'Mantenha quadril e tronco estáveis. Trabalhe em 1–2 RIR.' },
+                    { id: 'LB4', name: 'Máquina Adutora', sets: 2, reps: '12 a 20', rest: 90, step: 5, instructions: 'Feche as pernas controladamente e volte sem bater os pesos. Trabalhe em 1–2 RIR.' },
+                    { id: 'LB5', name: 'Máquina de Panturrilha', sets: 3, reps: '10 a 15', rest: 90, step: 5, instructions: 'Alongue de forma confortável e suba e desça sem balanço. Trabalhe em 1–2 RIR.' }
                 ]
             }
         };
 
-        const defaultWorkoutOrder = ['UpperA', 'LowerA', 'UpperB', 'LowerB'];
+        const defaultWorkoutOrder = ['A', 'B', 'C', 'D', 'E'];
         const defaultSettings = {}; 
 
         const parseReps = (repsStr) => {
@@ -262,6 +271,8 @@
                 let finalDeloadWeight = roundToStep(targetWeightForMinReps, machineStep);
 
                 // --- TRAVA DE SEGURANÇA ABSOLUTA ---
+                // Se TODAS as séries falharam (nenhuma atingiu o R_min), o algoritmo é proibido
+                // de recomendar um peso igual ou maior ao menor peso que causou falha na sessão.
                 let allFailed = true;
                 let minFailedWeight = Infinity;
                 exerciseLogs.forEach(log => {
@@ -292,7 +303,8 @@
             }
         };
 
-        // NOTA: As keys do local storage foram atualizadas para "_v2" para resetar automaticamente e carregar o novo treino
+        const hasCurrentWorkoutPlan = localStorage.getItem('neurofit_workoutPlanVersion') === WORKOUT_PLAN_VERSION;
+
         let state = {
             screen: 'home',
             workoutId: null,
@@ -300,28 +312,103 @@
             exIndex: 0,
             isResting: false,
             timeLeft: 0,
+            restEndAt: null,
             inputWeight: '',
             inputReps: '',
+            inputTestWeight: '',
+            inputTestReps: '',
+            inputCardioMinutes: 25,
+            inputCardioRpe: 3,
             weightStatus: 'normal',
             sessionLog: [],
             modal: null,
-            settings: JSON.parse(localStorage.getItem('neurofit_v2_settings')) || defaultSettings,
-            progress: JSON.parse(localStorage.getItem('neurofit_v2_progress')) || {},
-            history: JSON.parse(localStorage.getItem('neurofit_v2_history')) || [],
-            customWorkouts: JSON.parse(localStorage.getItem('neurofit_v2_customWorkouts')) || JSON.parse(JSON.stringify(defaultWorkoutData)),
-            workoutOrder: JSON.parse(localStorage.getItem('neurofit_v2_workoutOrder')) || defaultWorkoutOrder,
+            settings: JSON.parse(localStorage.getItem('neurofit_settings')) || defaultSettings,
+            progress: hasCurrentWorkoutPlan ? (JSON.parse(localStorage.getItem('neurofit_progress')) || {}) : {},
+            history: JSON.parse(localStorage.getItem('neurofit_history')) || [],
+            customWorkouts: hasCurrentWorkoutPlan ? (JSON.parse(localStorage.getItem('neurofit_customWorkouts')) || JSON.parse(JSON.stringify(defaultWorkoutData))) : JSON.parse(JSON.stringify(defaultWorkoutData)),
+            workoutOrder: hasCurrentWorkoutPlan ? (JSON.parse(localStorage.getItem('neurofit_workoutOrder')) || defaultWorkoutOrder) : [...defaultWorkoutOrder],
             simulator: { reps: '10 a 12', sets: 4, step: 2, logs: [{w: 10, r: 4}, {w: 10, r: 4}, {w: 6, r: 8}, {w: 6, r: 8}] }
         };
+
+        if (!hasCurrentWorkoutPlan) {
+            localStorage.setItem('neurofit_workoutPlanVersion', WORKOUT_PLAN_VERSION);
+            localStorage.setItem('neurofit_customWorkouts', JSON.stringify(state.customWorkouts));
+            localStorage.setItem('neurofit_workoutOrder', JSON.stringify(state.workoutOrder));
+            localStorage.setItem('neurofit_progress', JSON.stringify(state.progress));
+        }
         
         let timerInterval = null;
         let somaticBreathInterval = null;
         let breathState = 'INSPIRAR';
 
-        const saveProgress = () => localStorage.setItem('neurofit_v2_progress', JSON.stringify(state.progress));
-        const saveHistory = () => localStorage.setItem('neurofit_v2_history', JSON.stringify(state.history));
-        const saveSettingsForm = () => { localStorage.setItem('neurofit_v2_settings', JSON.stringify(state.settings)); navigate('home'); };
-        const saveCustomWorkouts = () => localStorage.setItem('neurofit_v2_customWorkouts', JSON.stringify(state.customWorkouts));
-        const saveWorkoutOrder = () => localStorage.setItem('neurofit_v2_workoutOrder', JSON.stringify(state.workoutOrder));
+        const saveProgress = () => localStorage.setItem('neurofit_progress', JSON.stringify(state.progress));
+        const saveHistory = () => localStorage.setItem('neurofit_history', JSON.stringify(state.history));
+        const saveSettingsForm = () => { localStorage.setItem('neurofit_settings', JSON.stringify(state.settings)); navigate('home'); };
+        const saveCustomWorkouts = () => localStorage.setItem('neurofit_customWorkouts', JSON.stringify(state.customWorkouts));
+        const saveWorkoutOrder = () => localStorage.setItem('neurofit_workoutOrder', JSON.stringify(state.workoutOrder));
+
+        const saveActiveSession = () => {
+            if (!state.workoutId || state.screen !== 'workout') return;
+            localStorage.setItem('neurofit_activeSession', JSON.stringify({
+                planVersion: WORKOUT_PLAN_VERSION,
+                workoutId: state.workoutId,
+                exIndex: state.exIndex,
+                isResting: state.isResting,
+                timeLeft: state.timeLeft,
+                restEndAt: state.restEndAt,
+                inputWeight: state.inputWeight,
+                inputReps: state.inputReps,
+                inputTestWeight: state.inputTestWeight,
+                inputTestReps: state.inputTestReps,
+                inputCardioMinutes: state.inputCardioMinutes,
+                inputCardioRpe: state.inputCardioRpe,
+                weightStatus: state.weightStatus,
+                sessionLog: state.sessionLog
+            }));
+        };
+
+        const clearActiveSession = () => localStorage.removeItem('neurofit_activeSession');
+
+        const restoreActiveSession = () => {
+            const raw = localStorage.getItem('neurofit_activeSession');
+            if (!raw) return false;
+
+            try {
+                const saved = JSON.parse(raw);
+                const workout = state.customWorkouts[saved.workoutId];
+                if (saved.planVersion !== WORKOUT_PLAN_VERSION || !workout || !workout.exercises?.length) {
+                    clearActiveSession();
+                    return false;
+                }
+
+                state.screen = 'workout';
+                state.workoutId = saved.workoutId;
+                state.exIndex = Math.min(Math.max(parseInt(saved.exIndex) || 0, 0), workout.exercises.length - 1);
+                state.sessionLog = Array.isArray(saved.sessionLog) ? saved.sessionLog : [];
+                state.inputWeight = saved.inputWeight ?? '';
+                state.inputReps = saved.inputReps ?? '';
+                state.inputTestWeight = saved.inputTestWeight ?? '';
+                state.inputTestReps = saved.inputTestReps ?? '';
+                state.inputCardioMinutes = saved.inputCardioMinutes ?? 25;
+                state.inputCardioRpe = saved.inputCardioRpe ?? 3;
+                state.weightStatus = saved.weightStatus || 'normal';
+                state.restEndAt = Number(saved.restEndAt) || null;
+                state.isResting = Boolean(saved.isResting && state.restEndAt);
+
+                if (state.isResting) {
+                    state.timeLeft = Math.max(0, Math.ceil((state.restEndAt - Date.now()) / 1000));
+                    if (state.timeLeft === 0) {
+                        state.isResting = false;
+                        state.restEndAt = null;
+                        loadSuggestedValues();
+                    }
+                }
+                return true;
+            } catch (error) {
+                clearActiveSession();
+                return false;
+            }
+        };
 
         const exportData = () => {
             const dataToExport = {
@@ -380,7 +467,9 @@
 
         const recalculateProgress = () => {
             const allExIds = new Set();
-            Object.values(state.customWorkouts).forEach(w => w.exercises.forEach(e => allExIds.add(e.id)));
+            Object.values(state.customWorkouts).forEach(w => w.exercises.forEach(e => {
+                if (e.type !== 'cardio') allExIds.add(e.id);
+            }));
             
             allExIds.forEach(exId => {
                 const relevantLogs = [];
@@ -431,8 +520,12 @@
 
         const startWorkout = (id) => {
             state.workoutId = id; state.exIndex = 0;
-            state.sessionLog = []; state.isResting = false;
-            loadSuggestedValues(); navigate('workout');
+            state.sessionLog = []; state.isResting = false; state.restEndAt = null;
+            state.inputTestWeight = ''; state.inputTestReps = '';
+            loadSuggestedValues();
+            state.screen = 'workout';
+            saveActiveSession();
+            render();
         };
 
         const moveWorkout = (index, dir) => {
@@ -499,13 +592,23 @@
             const numEx = wData.exercises.length;
             if (numEx === 0) return;
             state.exIndex = (state.exIndex + dir + numEx) % numEx;
+            state.inputTestWeight = ''; state.inputTestReps = '';
             skipRest();
             loadSuggestedValues();
+            saveActiveSession();
             render();
         };
 
         const loadSuggestedValues = () => {
             const ex = state.customWorkouts[state.workoutId].exercises[state.exIndex];
+            if (ex.type === 'cardio') {
+                state.inputCardioMinutes = 25;
+                state.inputCardioRpe = 3;
+                state.inputWeight = '';
+                state.inputReps = '';
+                state.weightStatus = 'normal';
+                return;
+            }
             const history = state.progress[ex.id];
             
             if (history && history.hasTested1RM) {
@@ -525,6 +628,7 @@
             newVal = roundToStep(newVal, step);
             state.inputWeight = newVal;
             document.getElementById('inputWeight').value = newVal;
+            saveActiveSession();
         };
 
         const adjustReps = (val) => {
@@ -532,6 +636,7 @@
             let newVal = Math.max(0, current + val);
             state.inputReps = newVal;
             document.getElementById('inputReps').value = newVal;
+            saveActiveSession();
         };
 
         const updateExStepInWorkout = (exId, newStep) => {
@@ -603,7 +708,9 @@
                     sufferedDeload: false
                 };
                 
-                saveProgress(); loadSuggestedValues(); render();
+                state.inputTestWeight = '';
+                state.inputTestReps = '';
+                saveProgress(); loadSuggestedValues(); saveActiveSession(); render();
             }
         };
 
@@ -688,9 +795,56 @@
             }
         };
 
-        const startRestTimer = (seconds) => {
-            state.isResting = true; state.timeLeft = seconds; render();
-            
+        const completeCardio = () => {
+            const minutes = parseInt(document.getElementById('cardioMinutes').value) || 0;
+            const rpe = parseFloat(document.getElementById('cardioRpe').value) || 0;
+            const ex = state.customWorkouts[state.workoutId].exercises[state.exIndex];
+
+            if (minutes <= 0 || rpe <= 0 || rpe > 10) {
+                showModal('alert', 'Informe a duração e um RPE entre 1 e 10.');
+                return;
+            }
+
+            state.sessionLog.push({
+                exId: ex.id,
+                name: ex.name,
+                type: 'cardio',
+                minutes,
+                rpe
+            });
+            finishWorkout();
+        };
+
+        const updateRestCountdown = () => {
+            if (!state.isResting || !state.restEndAt) return;
+            state.timeLeft = Math.max(0, Math.ceil((state.restEndAt - Date.now()) / 1000));
+            if (state.timeLeft <= 0) {
+                skipRest();
+                return;
+            }
+            const disp = document.getElementById('timer-display');
+            if (disp) disp.innerText = formatTime(state.timeLeft);
+        };
+
+        const startRestTimer = (seconds, savedEndAt = null) => {
+            if (timerInterval) clearInterval(timerInterval);
+            if (somaticBreathInterval) clearInterval(somaticBreathInterval);
+
+            state.restEndAt = savedEndAt || (Date.now() + (seconds * 1000));
+            state.timeLeft = Math.max(0, Math.ceil((state.restEndAt - Date.now()) / 1000));
+            if (state.timeLeft <= 0) {
+                state.isResting = false;
+                state.restEndAt = null;
+                loadSuggestedValues();
+                saveActiveSession();
+                render();
+                return;
+            }
+
+            state.isResting = true;
+            saveActiveSession();
+            render();
+
             let breathCount = 0;
             somaticBreathInterval = setInterval(() => {
                 breathCount++;
@@ -698,32 +852,35 @@
                 if(modulo < 4) breathState = 'INSPIRAR';
                 else if(modulo < 8) breathState = 'SEGURAR';
                 else breathState = 'EXPIRAR';
-                
+
                 const labelElement = document.getElementById('somatic-label');
                 if(labelElement) labelElement.innerText = breathState;
             }, 1000);
 
-            timerInterval = setInterval(() => {
-                state.timeLeft--;
-                if (state.timeLeft <= 0) { skipRest(); } else {
-                    const disp = document.getElementById('timer-display');
-                    if(disp) disp.innerText = formatTime(state.timeLeft);
-                }
-            }, 1000);
+            timerInterval = setInterval(updateRestCountdown, 250);
         };
 
         const skipRest = () => { 
             if(timerInterval) clearInterval(timerInterval); 
             if(somaticBreathInterval) clearInterval(somaticBreathInterval); 
-            state.isResting = false; 
+            state.isResting = false;
+            state.restEndAt = null;
+            state.timeLeft = 0;
             loadSuggestedValues();
+            saveActiveSession();
             render(); 
         };
 
         const finishWorkout = () => {
             const uniqueExercisesCount = new Set(state.sessionLog.map(l => l.exId)).size;
+            const hasCardio = state.sessionLog.some(l => l.type === 'cardio');
+            if(timerInterval) clearInterval(timerInterval);
+            if(somaticBreathInterval) clearInterval(somaticBreathInterval);
+            state.isResting = false;
+            state.restEndAt = null;
+            clearActiveSession();
             
-            if (uniqueExercisesCount > 1 || state.sessionLog.length > 1) {
+            if (hasCardio || uniqueExercisesCount > 1 || state.sessionLog.length > 1) {
                 const wData = state.customWorkouts[state.workoutId];
                 state.history.push({ id: Date.now(), routine: wData.name, date: new Date().toISOString(), log: [...state.sessionLog] });
                 saveHistory();
@@ -947,7 +1104,7 @@
                                     <button class="btn btn-ghost" style="color: var(--accent-danger); padding: 8px;" onclick="deleteHistory(${h.id})">${icons.trash}</button>
                                 </div>
                                 <p class="text-sm text-secondary mb-2">${new Date(h.date).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute:'2-digit' })}</p>
-                                <div class="badge badge-success">${h.log.length} Séries Completas</div>
+                                <div class="badge badge-success">${h.log.some(item => item.type === 'cardio') ? `${h.log[0].minutes} min · RPE ${h.log[0].rpe}` : `${h.log.length} Séries Completas`}</div>
                             </div>
                         `).join('')}
                     </div>
@@ -997,6 +1154,7 @@
                 const progPct = Math.min((state.sessionLog.length / totalSetsInWorkout) * 100, 100);
                 const isCompleted = currentSetIndex >= ex.sets;
 
+                const isCardio = ex.type === 'cardio';
                 const needs1RM = !(state.progress[ex.id] && state.progress[ex.id].hasTested1RM);
                 const isLastSet = currentSetIndex === ex.sets - 1;
                 const isIntense = ex.isIntense || false;
@@ -1023,6 +1181,58 @@
                                 <button class="btn btn-outline" onclick="skipRest()">${icons.skip} Ignorar Recuperação</button>
                             </div>
                         </div>
+                    `;
+                    return;
+                }
+
+                if (isCardio) {
+                    app.innerHTML = `
+                        <header class="slide-up">
+                            <button class="back-btn" onclick="finishWorkout()">${icons.arrowLeft}</button>
+                            <div style="text-align: right;">
+                                <h2 class="text-secondary" style="font-size: 1rem;">Quarta-feira</h2>
+                                <span class="text-xs text-muted" style="font-weight: 600;">Cardio leve/moderado</span>
+                            </div>
+                        </header>
+
+                        <div class="progress-container slide-up"><div class="progress-bar" style="width: ${isCompleted ? 100 : 0}%"></div></div>
+
+                        <div class="card slide-up">
+                            <h3 style="font-size: 1.25rem; text-align: center; margin-bottom: 12px;">${ex.name}</h3>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                                <span class="badge badge-purple">25–30 minutos</span>
+                                <span class="badge" style="background: rgba(255,255,255,0.05);">RPE 3–4/10</span>
+                            </div>
+                            <div class="highlight-box mt-4"><p class="text-warning text-sm" style="font-weight: 600; display: flex; align-items: center; gap: 6px;">${icons.alert} ${ex.instructions}</p></div>
+                        </div>
+
+                        ${isCompleted ? `
+                            <div class="card slide-up" style="text-align: center; border-color: var(--accent-success); background: rgba(16, 185, 129, 0.05);">
+                                <h3 class="text-success">${icons.check} Cardio concluído</h3>
+                            </div>
+                        ` : `
+                            <div class="card slide-up">
+                                <div class="input-row mb-4">
+                                    <div class="input-group">
+                                        <label>Duração realizada (min)</label>
+                                        <div class="stepper-control">
+                                            <button class="stepper-btn" onclick="let el = document.getElementById('cardioMinutes'); el.value = Math.max(1, parseInt(el.value || 25) - 1); state.inputCardioMinutes = el.value; saveActiveSession()">${icons.minus}</button>
+                                            <input type="number" id="cardioMinutes" min="1" value="${state.inputCardioMinutes}" oninput="state.inputCardioMinutes = this.value; saveActiveSession()">
+                                            <button class="stepper-btn" onclick="let el = document.getElementById('cardioMinutes'); el.value = parseInt(el.value || 25) + 1; state.inputCardioMinutes = el.value; saveActiveSession()">${icons.plus}</button>
+                                        </div>
+                                    </div>
+                                    <div class="input-group">
+                                        <label>RPE percebido (1–10)</label>
+                                        <div class="stepper-control">
+                                            <button class="stepper-btn" onclick="let el = document.getElementById('cardioRpe'); el.value = Math.max(1, parseInt(el.value || 3) - 1); state.inputCardioRpe = el.value; saveActiveSession()">${icons.minus}</button>
+                                            <input type="number" id="cardioRpe" min="1" max="10" value="${state.inputCardioRpe}" oninput="state.inputCardioRpe = this.value; saveActiveSession()">
+                                            <button class="stepper-btn" onclick="let el = document.getElementById('cardioRpe'); el.value = Math.min(10, parseInt(el.value || 3) + 1); state.inputCardioRpe = el.value; saveActiveSession()">${icons.plus}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-success" onclick="completeCardio()">${icons.check} Registrar bicicleta</button>
+                            </div>
+                        `}
                     `;
                     return;
                 }
@@ -1084,17 +1294,17 @@
                             <div class="input-group">
                                 <label>Carga Levantada (kg)</label>
                                 <div class="stepper-control">
-                                    <button class="stepper-btn" onclick="let el = document.getElementById('testWeight'); el.value = Math.max(0, roundToStep(parseFloat(el.value || 0) - ${step}, ${step}))">${icons.minus}</button>
-                                    <input type="number" id="testWeight" step="${step}" placeholder="50" autocomplete="off" onchange="this.value = roundToStep(parseFloat(this.value || 0), ${step})">
-                                    <button class="stepper-btn" onclick="let el = document.getElementById('testWeight'); el.value = roundToStep(parseFloat(el.value || 0) + ${step}, ${step})">${icons.plus}</button>
+                                    <button class="stepper-btn" onclick="let el = document.getElementById('testWeight'); el.value = Math.max(0, roundToStep(parseFloat(el.value || 0) - ${step}, ${step})); state.inputTestWeight = el.value; saveActiveSession()">${icons.minus}</button>
+                                    <input type="number" id="testWeight" step="${step}" value="${state.inputTestWeight}" placeholder="50" autocomplete="off" onchange="this.value = roundToStep(parseFloat(this.value || 0), ${step}); state.inputTestWeight = this.value; saveActiveSession()" oninput="state.inputTestWeight = this.value; saveActiveSession()">
+                                    <button class="stepper-btn" onclick="let el = document.getElementById('testWeight'); el.value = roundToStep(parseFloat(el.value || 0) + ${step}, ${step}); state.inputTestWeight = el.value; saveActiveSession()">${icons.plus}</button>
                                 </div>
                             </div>
                             <div class="input-group">
                                 <label>Reps Executadas</label>
                                 <div class="stepper-control">
-                                    <button class="stepper-btn" onclick="document.getElementById('testReps').value = Math.max(0, parseInt(document.getElementById('testReps').value || 0) - 1)">${icons.minus}</button>
-                                    <input type="number" id="testReps" placeholder="8" autocomplete="off">
-                                    <button class="stepper-btn" onclick="document.getElementById('testReps').value = parseInt(document.getElementById('testReps').value || 0) + 1">${icons.plus}</button>
+                                    <button class="stepper-btn" onclick="let el = document.getElementById('testReps'); el.value = Math.max(0, parseInt(el.value || 0) - 1); state.inputTestReps = el.value; saveActiveSession()">${icons.minus}</button>
+                                    <input type="number" id="testReps" value="${state.inputTestReps}" placeholder="8" autocomplete="off" oninput="state.inputTestReps = this.value; saveActiveSession()">
+                                    <button class="stepper-btn" onclick="let el = document.getElementById('testReps'); el.value = parseInt(el.value || 0) + 1; state.inputTestReps = el.value; saveActiveSession()">${icons.plus}</button>
                                 </div>
                             </div>
                         </div>
@@ -1126,7 +1336,7 @@
                                 <label>Carga da Série (kg)</label>
                                 <div class="stepper-control">
                                     <button class="stepper-btn" onclick="adjustWeight(-1)">${icons.minus}</button>
-                                    <input type="number" id="inputWeight" step="${step}" value="${state.inputWeight}" onchange="this.value = roundToStep(parseFloat(this.value || 0), ${step}); state.inputWeight = this.value" oninput="state.inputWeight = this.value">
+                                    <input type="number" id="inputWeight" step="${step}" value="${state.inputWeight}" onchange="this.value = roundToStep(parseFloat(this.value || 0), ${step}); state.inputWeight = this.value; saveActiveSession()" oninput="state.inputWeight = this.value; saveActiveSession()">
                                     <button class="stepper-btn" onclick="adjustWeight(1)">${icons.plus}</button>
                                 </div>
                             </div>
@@ -1134,7 +1344,7 @@
                                 <label>Concluídas</label>
                                 <div class="stepper-control">
                                     <button class="stepper-btn" onclick="adjustReps(-1)">${icons.minus}</button>
-                                    <input type="number" id="inputReps" value="${state.inputReps}" oninput="state.inputReps = this.value">
+                                    <input type="number" id="inputReps" value="${state.inputReps}" oninput="state.inputReps = this.value; saveActiveSession()">
                                     <button class="stepper-btn" onclick="adjustReps(1)">${icons.plus}</button>
                                 </div>
                             </div>
@@ -1164,10 +1374,23 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            recalculateProgress();
-            render();
+            const restoredSession = restoreActiveSession();
+            if (!restoredSession) recalculateProgress();
+            if (restoredSession && state.isResting && state.restEndAt) {
+                startRestTimer(0, state.restEndAt);
+            } else {
+                if (restoredSession) saveActiveSession();
+                render();
+            }
         });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && state.isResting) updateRestCountdown();
+            saveActiveSession();
+        });
+
+        window.addEventListener('pagehide', saveActiveSession);
     </script>
 </body>
 </html>
-```eof
+
